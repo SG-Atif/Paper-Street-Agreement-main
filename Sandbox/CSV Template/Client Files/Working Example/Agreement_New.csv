@@ -1,0 +1,3 @@
+External Id,Subsidiary,Customer,Payment Method,Currency,Contract Term,Required Monthly Minimum,Start Date,End Date,Is Ever Green,Status
+,Parent Company : US West,Alan King,Visa,US Dollar,12 Month,704,6/1/2022,6/30/2023,FALSE,Active
+,Parent Company : US West,Alan King,Visa,US Dollar,12 Month,1500,6/1/2022,6/30/2023,FALSE,Active

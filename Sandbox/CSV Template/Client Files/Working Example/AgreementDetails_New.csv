@@ -1,0 +1,10 @@
+External Id,Internal Id,Agreement,Created From,Created From Line Key,Price Level,Item,Quantity,Rate,Amount,Billing Frequency,Start Date,End Date,Next Renewal Date,Next Billing Date,Status,Agreement Type,Usage Group,Price Type,Required Minimum
+,5020,5205,Sales Order #705,78735,,PN-AU Additional Users,9,10,90,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,10
+,5018,5205,Sales Order #705,78736,,AudioEye Standard,1,50,50,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,500
+,5019,5205,Sales Order #705,78737,,Microsites,1,40,40,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,1000
+,5021,5205,Sales Order #705,78738,,PN-EF e-faxing,1,25,25,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,100
+,5022,5205,Sales Order #705,78739,,PN-MSP Medical Spa Package,1,499,499,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,4000
+,5119,5305,Sales Order #706,78843,,PN-AU Additional Users,18,40,720,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,10
+,5120,5305,Sales Order #706,78844,,PN-E-RX eRx,1,240,240,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,100
+,5118,5305,Sales Order #706,78845,,Microsites,2,40,80,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,40
+,5121,5305,Sales Order #706,78846,,Software Subscription,1,599,599,1 Month,6/1/2022,6/1/2023,7/1/2022,6/2/2023,Active,Subscription,,,100

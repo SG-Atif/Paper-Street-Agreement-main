@@ -1,0 +1,3 @@
+External Id,Internal Id,Agreement,Created From,Created From Line Key,Price Level,Item,Quantity,Rate,Amount,Billing Frequency,Start Date,End Date,Next Renewal Date,Next Billing Date,Status,Agreement Type,Usage Group,Price Type,Required Minimum
+10000002,,2705,Sales Order #688,,App Store Pricing,AudioEye Standard,1,12,12,1 Month,6/27/2021,6/27/2022,6/28/2022,7/27/2021,Active,Usage,,Max Volume,100
+10000003,,2705,Sales Order #688,,Core Services,Software Subscription,600,7,4200,1 Month,6/27/2021,6/27/2022,6/28/2022,7/27/2021,Active,Subscription,,Per Tier,3500

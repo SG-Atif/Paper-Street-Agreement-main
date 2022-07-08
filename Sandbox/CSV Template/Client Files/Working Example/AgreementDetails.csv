@@ -1,0 +1,23 @@
+External Id,Internal Id,Agreement,Created From,Created From Line Key,Price Level,Item,Quantity,Rate,Amount,Billing Frequency,Start Date,End Date,Next Renewal Date,Next Billing Date,Status,Agreement Type,Usage Group,Price Type,Required Minimum
+10000002,,3561,Sales Order #688,,App Store Pricing,AudioEye Standard,1,12,12,1 Month,6/27/2021,6/27/2022,6/28/2022,7/27/2021,Active,Usage,,Max Volume,100
+10000003,,3561,Sales Order #688,,Core Services,Software Subscription,600,7,4200,1 Month,6/27/2021,6/27/2022,6/28/2022,7/27/2021,Active,Subscription,,Per Tier,3500
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+10000003,,3561,Sales Order #1261,,Contract Pricing,Additional Users,9,10,90,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,10
+10000004,,3561,Sales Order #1261,,Contract Pricing,Pulse,1,50,50,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,500
+10000005,,3561,Sales Order #1261,,Contract Pricing,iPad/iPhone,1,40,40,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,1000
+10000006,,3561,Sales Order #1261,,Contract Pricing,RAMP,1,25,25,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,100
+10000007,,3561,Sales Order #1261,,Contract Pricing,Med Spa level 3,1,499,499,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,4000
+,,,,,,,,,,,,,,,,,,,
+,,,,,,Total,,,704,,,,,,,,,,
+,Comment,In this example I am increasing the additional users from 1 to 9,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+10000010,,3996,Sales Order #3996,,Contract Pricing,Additional Users,18,40,720,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,10
+10000011,,3996,Sales Order #3996,,Contract Pricing,eRx,1,240,240,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,100
+10000012,,3996,Sales Order #3996,,Contract Pricing,iPad/iPhone,2,40,80,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,40
+10000013,,3996,Sales Order #3996,,Contract Pricing,Surgery or Dermatology Practice,1,599,599,1 Month,7/1/2022,7/31/2023,8/1/2023,8/1/2022,Active,Subscription,,Per Contract,100
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,Total,,,1639,,,,,,,,,,
+,Comment,In this example I am increasing the monthly subscription to $599.00,,,,,,,,,,,,,,,,,

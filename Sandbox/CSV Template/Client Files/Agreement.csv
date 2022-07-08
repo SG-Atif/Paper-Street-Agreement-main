@@ -1,0 +1,6 @@
+External Id,Subsidiary,Customer,Payment Method,Currency,Contract Term,Required Monthly Minimum,Start Date,End Date,Is Ever Green,Status
+10000001,Parent Company : US West,Alan King,Discover,US Dollar,12 Month,1500,6/27/2021,6/27/2022,FALSE,Active
+,,,,,,,,,,
+10000002,Patient Now,ID Cosmetic Clinic,Visa,US Dollar,12 Month,704,7/1/2022,7/31/2023,FALSE,Active
+,,,,,,,,,,
+10000009,Patient Now,Flower Mound Plastic Surgery,Visa,US Dollar,12 Month,1500,7/1/2022,7/31/2023,FALSE,Active
