@@ -10,8 +10,8 @@ function(log, search, record) {
             type: "customrecord_ps_agreement_conculsion",
             filters:
             [
-               //["custrecord_ps_ac_effective_date","on","today"], 
-               ["internalid", "anyof", "317"],
+               ["custrecord_ps_ac_effective_date","on","today"], 
+               //["internalid", "anyof", "317"],
                "AND", 
                ["custrecord_ps_ac_concluding_event","anyof","2"], 
                "AND", 

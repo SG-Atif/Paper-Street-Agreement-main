@@ -16,6 +16,18 @@
                                             opacity: 0.7;background-color: black; z-index:99999999999999;"> \
                                     </div>';
         jQuery("body").prepend(spinnerHTML);
+        var dateFormat = context.currentRecord.getValue("custpage_pref_date_format");
+        jQuery('.date_field').each(function(){
+            jQuery(this).attr('data-date-format', dateFormat);
+        });
+        jQuery(".date_field").on("change", function() {
+            if(this.value){
+                this.setAttribute(
+                    "data-date",
+                    moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format") )
+                )
+            }
+        }).trigger("change");
         jQuery("#custpage_list_agreement_detail_splits").on("change", "input, select", function(){
             var jsonData = [];
             jQuery("#custpage_list_agreement_detail_splits").find("tr:gt(0)").each(function(){
@@ -25,8 +37,8 @@
                         jsonData.push({
                             conclusionId : jQuery(this).find(".selected_agreement_detail").data("conclusionid"),
                             id : rowId,
-                            effecctiveDate : (jQuery(this).find(".line_effective_date").val() ? 
-                                                moment(new Date(jQuery(this).find(".line_effective_date").val())).format("MM/DD/YYYY")
+                            effecctiveDate : (jQuery(this).find(".line_effective_date").attr("data-date") ? 
+                                                moment(new Date(jQuery(this).find(".line_effective_date").attr("data-date"))).format(dateFormat)
                                                 : ""),
                             reason : jQuery(this).find(".line_cancel_reason").val()
                         });
@@ -38,14 +50,7 @@
         jQuery("#effective_date").on("change", function(){
             debugger;
             if(jQuery(this).val()){
-                var date = new Date(jQuery(this).val());
-                var day = date.getDate(),
-                month = date.getMonth() + 1,
-                year = date.getFullYear();
-                month = (month < 10 ? "0" : "") + month;
-                day = (day < 10 ? "0" : "") + day;
-                selectedDate = month +"/"+day+"/"+year; 
-                context.currentRecord.setValue({ fieldId : "custpage_affective_date", value : format.parse({value: selectedDate, type: format.Type.DATE})});
+                context.currentRecord.setValue({ fieldId : "custpage_affective_date", value : moment(jQuery(this).attr("data-date")).format(dateFormat)});
             }
             else{
                 context.currentRecord.setValue({ fieldId : "custpage_affective_date", value : ""});
@@ -74,7 +79,7 @@
             jQuery("#custpage_list_agreement_detail_splits").find("tr:gt(0)").each(function(){
                 if(jQuery(this).find(".selected_agreement_detail").is(":checked")){
                     totalSelectedLines = totalSelectedLines + 1;
-                    if(jQuery(this).find(".line_effective_date").val() && jQuery(this).find(".line_cancel_reason").val()){
+                    if(jQuery(this).find(".line_effective_date").attr("data-date") && jQuery(this).find(".line_cancel_reason").val()){
                         linesWithValues = linesWithValues + 1;
                     }
                 }

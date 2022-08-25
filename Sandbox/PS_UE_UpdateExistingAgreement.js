@@ -21,6 +21,15 @@
                     var agreementId = currentTranRec.getValue("custbody_ps_agreement");
                     var requestForNewAgreement = currentTranRec.getValue("custbody_ps_create_new_agreement");
                     log.debug({ title: "Agreement Id | is New Agreement", details : agreementId +" | "+ requestForNewAgreement });
+                    if (context.type == context.UserEventType.CREATE){
+                        if(requestForNewAgreement == true){
+                            var isAgreementLineExist = orderHasAnyAgreementItem(currentRecId);
+                            if(isAgreementLineExist == false){
+                                requestForNewAgreement = false;
+                                currentTranRec.getValue("custbody_ps_create_new_agreement", false);
+                            }
+                        }
+                    }
                     if(agreementId && requestForNewAgreement == false){
                         var agreementLookup = search.lookupFields({
                             type: 'customrecord_ps_agreement',
@@ -68,9 +77,9 @@
                search.createColumn({name: "lineuniquekey", label: "Line Unique Key"}),
                search.createColumn({name: "item", sort: search.Sort.ASC, label: "Item" }),
                search.createColumn({name: "quantity", label: "Quantity"}),
-               search.createColumn({name: "rate", label: "Item Rate"}),
+               search.createColumn({name: "fxrate", label: "Item Rate"}),
                search.createColumn({name: "pricelevel", label: "Price Level"}),
-               search.createColumn({name: "amount", label: "Amount"}),
+               search.createColumn({name: "fxamount", label: "Amount"}),
                search.createColumn({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                search.createColumn({name: "custbody_ps_agreement", label: "Agreement"}),
                search.createColumn({name: "custcol_ps_agreement_start_date", label: "Agreement Start Date"}),
@@ -89,9 +98,9 @@
                     lineKey : line.getValue({name: "lineuniquekey", label: "Line Unique Key"}),
                     item : line.getValue({name: "item", sort: search.Sort.ASC, label: "Item" }),
                     qty : line.getValue({name: "quantity", label: "Quantity"}),
-                    rate : line.getValue({name: "rate", label: "Item Rate"}),
+                    rate : line.getValue({name: "fxrate", label: "Item Rate"}),
                     priceLevel : line.getValue({name: "pricelevel", label: "Price Level"}),
-                    amount : line.getValue({name: "amount", label: "Amount"}),
+                    amount : line.getValue({name: "fxamount", label: "Amount"}),
                     billingFreq : line.getValue({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                     agreement : line.getValue({name: "custbody_ps_agreement", label: "Agreement"}),
                     startDate : line.getValue({name: "custcol_ps_agreement_start_date", label: "Start Date"}),
@@ -185,6 +194,27 @@
             return true;
         });
         return internalId;
+    }
+    function orderHasAnyAgreementItem(id){
+        var response = false;
+        var soItemSrch = search.create({
+            type: "transaction",
+            filters:
+            [
+               ["internalid","anyof", id], 
+               "AND", 
+               ["item.custitem_ps_agreement_item","noneof","@NONE@"]
+            ],
+            columns:
+            [
+               search.createColumn({name: "internalid", label: "Internal ID"}),
+               search.createColumn({name: "tranid", label: "Document Number"})
+            ]
+        });
+        soItemSrch.run().each(function(result){
+            response = true;
+        });
+        return response;
     }
 
     return {

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agreement Billing Schedule</title>
+	<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.2.621/js/jszip.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.2.510/js/kendo.all.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+	<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.2.510/styles/kendo.default-ocean-blue.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js'></script>
+	<style>
+		html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }
+		.modal .modal-dialog {
+			max-width: 400px;
+		}
+		.modal .modal-header, .modal .modal-body, .modal .modal-footer {
+			padding: 20px 30px;
+		}
+		.modal .modal-content {
+			border-radius: 3px;
+		}
+		.modal .modal-footer {
+			background: #ecf0f1;
+			border-radius: 0 0 3px 3px;
+		}
+		.modal .modal-title {
+			display: inline-block;
+		}
+		.modal .form-control {
+			border-radius: 2px;
+			box-shadow: none;
+			border-color: #dddddd;
+		}
+		.modal textarea.form-control {
+			resize: vertical;
+		}
+		.modal .btn {
+			border-radius: 2px;
+			min-width: 100px;
+		}
+		.modal form label {
+			font-weight: normal;
+		}
+		.header-photo {
+			display: inline-block;
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background-size: 32px 35px;
+			background-position: center center;
+			vertical-align: middle;
+			line-height: 32px;
+			box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+			margin-left: 5px;
+		}
+		.header-name {
+			display: inline-block;
+			vertical-align: middle;
+			line-height: 32px;
+			padding-left: 3px;
+		}
+		#treelist th{
+			border: 0px !important;
+			font-weight: bold;
+		}
+		.k-treelist-group > td{
+			border: 0px !important;
+		}
+		#treelist td:nth-child(1){
+			width: 25%;
+		}
+		#treelist td:nth-child(2){
+			width: 25%;
+		}
+		#treelist td:nth-child(3){
+			width: 25%;
+		}
+		#treelist td:nth-child(4){
+			width: 25%;
+		}
+		.k-grid-content{
+			overflow-y: hidden;
+		}
+		.date_field {
+			position: relative;
+			color: white;
+		}
+		.date_field:before {
+			position: absolute;
+			content: attr(data-date);
+			display: inline-block;
+			color: black;
+		}
+		.date_field::-webkit-datetime-edit, .date_field::-webkit-inner-spin-button, .date_field::-webkit-clear-button {
+			display: none;
+		}
+		.date_field::-webkit-calendar-picker-indicator {
+			position: absolute;
+			top: 3px;
+			right: 0;
+			color: black;
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+	<div id="errorMappingModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form>
+					<div class="modal-header" style="background: #d9534f;color: #fff;">
+						<h4 class="modal-title">Error</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true" 
+								style="color: white;opacity: 0.6;">&times;</button>
+					</div>
+					<div class="modal-body">
+						<p></p>
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+    <div class="container" style="width: 100%;font-size:14px;font-family: 'Helvetica Neue';line-height: 1.42857143;">
+		<h2 style="width: 500px; margin:0 auto;margin-bottom: 20px;font-weight: bold;text-decoration: underline;font-size: 27px;">Agreement Billing Schedule</h2>
+		<div>
+			<div>
+				<div>
+					<div style="padding: 0px"> 
+					  <label>Schedule Date</label>
+					  <input type="date" id="sg_billing_schedule_date" class="date_field form-control" data-date="" 
+					  	style="width: 200px; height: 28px;" />
+					</div>
+				</div>
+			</div><br/>
+			<div>
+				<div id="treelist"></div>
+			</div>
+			<script id="header-template" type="text/x-kendo-template">
+				#if(parentId == null){#
+					<div class='header-photo' style="background-image: url('#: headerPhoto #')"></div>
+					<div class='header-name' >#: name #</div>
+				#}else{#
+					<div class='header-name' style= 'margin-left: 25px;' >#: name #</div>
+				#}#
+			   
+			</script>
+			<script>
+				jQuery(document).ready(function() {
+					var dateFormat = parent.custpage_pref_date_format.value;
+					jQuery('body').css('background-color', '#f7f7f7');
+					parent.jQuery('body').css('background-color', '#f7f7f7');
+					parent.jQuery('.uir-page-title').hide();
+					jQuery('#sg_billing_schedule_date').attr('data-date-format', dateFormat);
+					jQuery("#sg_billing_schedule_date").on("change", function() {
+						this.setAttribute(
+							"data-date",
+							moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format") )
+						)
+					}).trigger("change");
+					jQuery('#sg_billing_schedule_date').attr('value', moment().format("YYYY-MM-DD"));
+					jQuery('#sg_billing_schedule_date').attr('data-date', moment().format(dateFormat));
+					var headerPhoto = parent.custpage_agreement_icon.value;
+					jQuery("#treelist").kendoTreeList({
+                        toolbar: ["excel", "search" ],
+						dataSource: {
+							data: []
+						},
+						columns: [
+							{ field: "name", title: "Agreement",
+							template: $("#header-template").html() },
+							{field: "lineName", title: "Agreement Detail Line"},
+							{field: "amount", title: "Calculated Amount"},
+							{field: "nextBillingDate", title: "Billing Date"},
+						]
+					});
+					getBillingScheduleData(jQuery("#sg_billing_schedule_date").val());
+					jQuery("#sg_billing_schedule_date").on("change", function(){
+						console.log("Date Changed");
+						var selectedDate = jQuery(this).attr('data-date');
+						getBillingScheduleData(selectedDate);
+					});
+					function getBillingScheduleData(date) {
+						if(date){
+							date = moment(date).format(dateFormat);
+						}
+						else{
+							date = "";
+						}
+						var settings = {
+							"url": parent.custpage_restlet_url.value +"&date="+date,
+							"method": "GET",
+							"timeout": 0,
+							"contentType": "application/json",
+						};
+						$.ajax(settings).done(function (response) {
+							debugger;
+							var billingScheduleData = [];
+							if(response && response != null){
+								billingScheduleData = JSON.parse(response);
+								if(billingScheduleData && billingScheduleData.length > 0){
+									for(var i = 0; i < billingScheduleData.length; i++){
+										billingScheduleData[i].headerPhoto = headerPhoto;
+									}
+								}
+							}
+							else {
+								billingScheduleData = [];
+								jQuery("#errorMappingModal .modal-body p").text("No Billing schedule data found for selected date.");
+								jQuery("#errorMappingModal").modal();
+							}
+							setupTreeList(billingScheduleData);
+						}).fail(function (response) {
+							console.log(response);
+							jQuery("#errorMappingModal .modal-body p").text("Something went wrong. Please try again.");
+							jQuery("#errorMappingModal").modal();
+						});
+					}
+					function setupTreeList(billingScheduleData){
+						var treeList = $("#treelist").data("kendoTreeList");
+						var dsNew = new kendo.data.TreeListDataSource({ data: billingScheduleData});
+						treeList.setDataSource(dsNew);
+						parent.document.getElementById("billingScheudleFrame").style.height = parent.document.getElementById("billingScheudleFrame").contentWindow.document.body.scrollHeight + 'px';
+					}
+				});
+			</script>
+		</div>
+    </div>
+</body>
+</html>
+ 

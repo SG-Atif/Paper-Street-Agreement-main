@@ -2,9 +2,13 @@
  * @NApiVersion 2.x
  * @NScriptType Suitelet
  */
- define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/redirect'], 
- function(serverWidget, log, search, record, format, redirect) {
+ define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/redirect', 'N/runtime','./moment.min.js'], 
+ function(serverWidget, log, search, record, format, redirect, runtime, moment) {
     function onRequest(context){
+        var currentUserObj = runtime.getCurrentUser();
+        var dateFormat = currentUserObj.getPreference ({
+          name: 'dateformat'
+        });
         if(context.request.method === 'GET'){
           var agreementId = context.request.parameters.agreementId;
           log.debug({ title : "Agreement Id", details : agreementId });
@@ -17,6 +21,13 @@
           /*************************
            * Server side fields
            **********************/
+           form.addField({
+                id: 'custpage_pref_date_format',
+                type: serverWidget.FieldType.TEXT,
+                label: 'Date Format'
+           }).updateDisplayType({
+                displayType : serverWidget.FieldDisplayType.HIDDEN
+           }).defaultValue = dateFormat;
           if(agreementId){
             var agreementFld = form.addField({
                 id: 'custpage_agreement',
@@ -108,6 +119,26 @@
                         .modal form label {\
                             font-weight: normal;\
                         }\
+                        .date_field {\
+                            position: relative;\
+                            color: white;\
+                        }\
+                        .date_field:before {\
+                            position: absolute;\
+                            content: attr(data-date);\
+                            display: inline-block;\
+                            color: black;\
+                        }\
+                        .date_field::-webkit-datetime-edit, .date_field::-webkit-inner-spin-button, .date_field::-webkit-clear-button {\
+                            display: none;\
+                        }\
+                        .date_field::-webkit-calendar-picker-indicator {\
+                            position: absolute;\
+                            top: 3px;\
+                            right: 0;\
+                            color: black;\
+                            opacity: 1;\
+                        }\
                     </style>\
                 </head>\
                 <body>';
@@ -152,7 +183,7 @@
                           <div class="form-group col-md-6">\
                               <div class="col-md-8 " style="padding: 0px"> \
                                 <label for="effective_date">Effective Date</label>\
-                                <input type="date" class="form-control" id="effective_date">\
+                                <input type="date"  class="date_field form-control" data-date="" id="effective_date"  data-date-format="'+dateFormat+'">\
                               </div>\
                           </div>\
                           <div class="form-group col-md-6">\
@@ -184,7 +215,7 @@
                               <th scope="col"  style="font-weight: bold;">Concluding Reason</th>\
                           </tr>\
                       </thead>\
-                      <tbody>'+loadTableData(agreementId, cancellationReasonOptions)+'</tbody>\
+                      <tbody>'+loadTableData(agreementId, cancellationReasonOptions, dateFormat)+'</tbody>\
                   </table>\
                 </div>';
             }
@@ -216,7 +247,9 @@
                 var jsonData = context.request.parameters.custpage_json_data;
                 log.debug({title : "JSON agreement detail data", details : jsonData});
                 var concludingReason = context.request.parameters.custpage_concluding_event_reason;
-                var effecctiveDate = context.request.parameters.custpage_affective_date;
+                var effecctiveDate = context.request.parameters.custpage_affective_date? 
+                                    moment(context.request.parameters.custpage_affective_date).format(dateFormat) : 
+                                    context.request.parameters.custpage_affective_date;
                 if(jsonData){
                     jsonData = JSON.parse(jsonData);
                     var totalLines = jsonData.length;
@@ -226,7 +259,7 @@
                         var currentConcludingReason = concludingReason;
                         for(var j = 0; j < jsonData.length; j++){
                             if(jsonData[j].effecctiveDate){
-                                currentEffectiveDate = new Date(jsonData[j].effecctiveDate);
+                                currentEffectiveDate = jsonData[j].effecctiveDate;
                             }
                             if(jsonData[j].reason){
                                 currentConcludingReason = jsonData[j].reason;
@@ -311,11 +344,12 @@
         }
         return html;
     }
-    function loadTableData(agreementId, reasons) {
+    function loadTableData(agreementId, reasons, dateFormat) {
       var rows = '';
       try{
           if(agreementId){
               var conclusionList = getExistingConclusionRecords(agreementId);
+              log.debug({ title : "Conclusion List", details : conclusionList});
               var agreementDetailList = getAgreementDetails(agreementId);
               log.debug({ title : "Agreement Details", details : agreementDetailList});
               if(agreementDetailList && agreementDetailList.length > 0){
@@ -328,13 +362,7 @@
                       if(filterData && filterData.length > 0){
                           var selectedDate = "";
                           if(filterData[0].effectiveDate){
-                              var date = new Date(filterData[0].effectiveDate);
-                              var day = date.getDate(),
-                              month = date.getMonth() + 1,
-                              year = date.getFullYear();
-                              month = (month < 10 ? "0" : "") + month;
-                              day = (day < 10 ? "0" : "") + day;
-                              selectedDate = year + "-" + month + "-" + day;
+                            selectedDate = filterData[0].effectiveDate;
                           }
                           rows = rows + '<th scope="row"><div class="form-check">\
                                 <input class="form-check-input selected_agreement_detail" type="checkbox"  data-conclusionid="' + filterData[0].conclusionId + '" \
@@ -342,7 +370,8 @@
                           <input type="checkbox" data-conclusionid="' + filterData[0].conclusionId + '"  class="checkbox selected_agreement_detail" id="' + agreementDetailList[i].id + '" \
                                   checked="checked" disabled="disabled" ></td> \
                               <td>' + agreementDetailList[i].item + '</td> \
-                              <td><input class="form-control line_effective_date" style="max-width:210px;" type="date" value="'+selectedDate+'"/></td> \
+                              <td><input class="date_field form-control line_effective_date" data-date="'+selectedDate+'" data-date-format="'+dateFormat+'"\
+                                                style="max-width:210px;" type="date" value="'+selectedDate+'"/></td> \
                               <td><select class="form-control line_cancel_reason" style="max-width: 300px;">'+prepareReasonListHtml(reasons, filterData[0].reason)+'</select></td>\
                           </tr>';
                         
@@ -351,7 +380,8 @@
                         rows = rows + '<th scope="row"><div class="form-check">\
                         <input class="form-check-input selected_agreement_detail" type="checkbox"  data-conclusionid="" id="' + agreementDetailList[i].id + '" ></th> \
                               <td>' + agreementDetailList[i].item + '</td> \
-                              <td><input class="form-control line_effective_date" style="max-width:210px;" type="date"/></td> \
+                              <td><input class="date_field form-control line_effective_date" data-date=""  data-date-format="'+dateFormat+'"\
+                              style="max-width:210px;" type="date"/></td> \
                               <td><select class="form-control line_cancel_reason" style="max-width: 300px;">'+prepareReasonListHtml(reasons, null)+'</select></td>\
                           </tr>';
                       }

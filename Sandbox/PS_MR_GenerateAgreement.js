@@ -3,8 +3,8 @@
  * @NScriptType MapReduceScript
  */
 
- define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format'], 
-function(log, search, record, moment, format) {
+define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runtime'],
+function (log, search, record, moment, format, runtime) {
     function getInputData() {
         var data = [];
         var preferencesSearch = search.create({
@@ -48,7 +48,11 @@ function(log, search, record, moment, format) {
         try{
             if(context.value){
                 var searchResult = JSON.parse(context.value);
-                if(searchResult.id){
+                if (searchResult.id) {
+                    var currentUserObj = runtime.getCurrentUser();
+                    var dateFormat = currentUserObj.getPreference({
+                        name: 'dateformat'
+                    });
                     var lineData = getTransactionLines(searchResult.id);
                     if(lineData && lineData.length > 0){
                         searchResult.lines = lineData;
@@ -72,7 +76,7 @@ function(log, search, record, moment, format) {
                                     value: agreementId
                                 }); 
                             }
-                            generateAgreementDetails(searchResult, agreementId);
+                            generateAgreementDetails(searchResult, agreementId, dateFormat);
                         }
                     }
                 }
@@ -187,9 +191,9 @@ function(log, search, record, moment, format) {
                search.createColumn({name: "lineuniquekey", label: "Line Unique Key"}),
                search.createColumn({name: "item", sort: search.Sort.ASC, label: "Item" }),
                search.createColumn({name: "quantity", label: "Quantity"}),
-               search.createColumn({name: "rate", label: "Item Rate"}),
+               search.createColumn({name: "fxrate", label: "Item Rate"}),
                search.createColumn({name: "pricelevel", label: "Price Level"}),
-               search.createColumn({name: "amount", label: "Amount"}),
+               search.createColumn({name: "fxamount", label: "Amount"}),
                search.createColumn({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                search.createColumn({name: "custbody_ps_agreement", label: "Agreement"}),
                search.createColumn({name: "custcol_ps_agreement_start_date", label: "Agreement Start Date"}),
@@ -200,6 +204,7 @@ function(log, search, record, moment, format) {
                search.createColumn({name: "custcol_ps_agreement_term_end_action", label: "Term End Action"}),
                search.createColumn({name: "custcol_ps_required_minimum", label: "Required Minimum"}),
                search.createColumn({name: "custcol_ps_agreement_type", label: "Agreement Type"}),
+               search.createColumn({name: "custcol_ps_billing_frequency", label: "Line Billing Frequency"}),
             ]
          });
          transactionLineSearch.run().each(function(line){
@@ -209,10 +214,12 @@ function(log, search, record, moment, format) {
                     lineKey : line.getValue({name: "lineuniquekey", label: "Line Unique Key"}),
                     item : line.getValue({name: "item", sort: search.Sort.ASC, label: "Item" }),
                     qty : line.getValue({name: "quantity", label: "Quantity"}),
-                    rate : line.getValue({name: "rate", label: "Item Rate"}),
+                    rate : line.getValue({name: "fxrate", label: "Item Rate"}),
                     priceLevel : line.getValue({name: "pricelevel", label: "Price Level"}),
-                    amount : line.getValue({name: "amount", label: "Amount"}),
-                    billingFreq : line.getValue({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
+                    amount : line.getValue({name: "fxamount", label: "Amount"}),
+                    billingFreq: line.getValue({ name: "custcol_ps_billing_frequency", label: "Line Billing Frequency" })
+                        ? line.getValue({ name: "custcol_ps_billing_frequency", label: "Line Billing Frequency" })
+                        : line.getValue({ name: "custbody_ps_billing_frequency", label: "Billing Frequency" }),
                     agreement : line.getValue({name: "custbody_ps_agreement", label: "Agreement"}),
                     startDate : line.getValue({name: "custcol_ps_agreement_start_date", label: "Start Date"}),
                     endDate : line.getValue({name: "custcol_ps_agreement_end_date", label: "End Date"}),
@@ -263,7 +270,7 @@ function(log, search, record, moment, format) {
         var newAgreementId = newAgreementRec.save({ enableSourcing: true, ignoreMandatoryFields: true });
         return newAgreementId;
     }
-    function generateAgreementDetails(tranData, agreementId){
+    function generateAgreementDetails(tranData, agreementId, dateFormat){
         var currentDate = moment();
         if(tranData.lines && tranData.lines.length > 0){
             log.debug({title : "Total Lines", details : tranData.lines.length});
@@ -296,7 +303,7 @@ function(log, search, record, moment, format) {
                     }
                     if(tranData.lines[i].endDate){
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_end_date', value: format.parse({value: tranData.lines[i].endDate, type: format.Type.DATE}) });
-                        var nextRenewalDate = moment(tranData.lines[i].endDate).add(1, 'days').format("MM/DD/YYYY")
+                        var nextRenewalDate = moment(tranData.lines[i].endDate).add(1, 'days').format(dateFormat)
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_next_renewal_date', value: format.parse({value: nextRenewalDate, type: format.Type.DATE}) });   
                     }
                     if(moment(tranData.lines[i].startDate).isSameOrBefore(currentDate)){

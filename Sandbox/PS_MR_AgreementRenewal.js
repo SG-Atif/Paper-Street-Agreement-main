@@ -35,7 +35,11 @@ function(log, search, record, moment, format) {
 
     function map(context) {
         try{
-            if(context.value){
+            if (context.value) {
+                var currentUserObj = runtime.getCurrentUser();
+                var dateFormat = currentUserObj.getPreference({
+                    name: 'dateformat'
+                });
                 var srchData = JSON.parse(context.value);
                 if(srchData){ //  && agreementId == "2405" ---- static id for testing.
                     log.debug({title : "Search Data", details : srchData});
@@ -100,17 +104,31 @@ function(log, search, record, moment, format) {
                                 fieldId: 'rate',
                                 value: agreementDetailList[j].rate,
                             });
-                            newRenewalTran.setCurrentSublistValue({
-                                sublistId: 'item',
-                                fieldId: 'amount',
-                                value: agreementDetailList[j].amount,
-                            });
-                            var nextRenewalDate = moment().format("MM/DD/YYYY");
+                            if (parseFloat(agreementDetailList[j].amount || 0) < 0) {
+                                newRenewalTran.setCurrentSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'rate',
+                                    value: (parseFloat(agreementDetailList[j].amount) / parseFloat(agreementDetailList[j].qty)).toFixed(2),
+                                });
+                                newRenewalTran.setCurrentSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'amount',
+                                    value: agreementDetailList[j].amount,
+                                });
+                            }
+                            else {
+                                newRenewalTran.setCurrentSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'amount',
+                                    value: agreementDetailList[j].amount,
+                                });
+                            }
+                            var nextRenewalDate = moment().format(dateFormat);
                             if(agreementDetailList[j].nextRenewalDate){
-                                nextRenewalDate = format.parse({value: moment(agreementDetailList[j].nextRenewalDate).format("MM/DD/YYYY") , type: format.Type.DATE})
+                                nextRenewalDate = format.parse({ value: moment(agreementDetailList[j].nextRenewalDate).format(dateFormat) , type: format.Type.DATE})
                             }
                             else if(agreementDetailList[j].endDate){
-                                nextRenewalDate = format.parse({value:moment(agreementRec.getValue("custrecord_ps_a_agreement_end_date")).add(1, "days").format("MM/DD/YYYY") , type: format.Type.DATE});
+                                nextRenewalDate = format.parse({ value: moment(agreementRec.getValue("custrecord_ps_a_agreement_end_date")).add(1, "days").format(dateFormat) , type: format.Type.DATE});
                             }
                             log.debug({title : "New Start Date", details : nextRenewalDate});
                             newRenewalTran.setCurrentSublistValue({

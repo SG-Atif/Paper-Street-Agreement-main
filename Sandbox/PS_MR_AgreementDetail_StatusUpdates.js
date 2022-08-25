@@ -3,7 +3,7 @@
  * @NScriptType MapReduceScript
  */
 
- define(['N/log', 'N/search', 'N/record', './moment.min.js'], function(log, search, record, moment) {
+define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/runtime'], function (log, search, record, moment, runtime) {
     function getInputData() {
         var agreementDetailsSrch = search.create({
             type: "customrecord_ps_agreement_details",
@@ -28,10 +28,10 @@
             if(context.value){
                 var searchResult = JSON.parse(context.value);
                 log.debug({ title: "Current Search Result", details: searchResult});
-                if(searchResult){
+                if (searchResult) {
                     var agreementDetailId =  searchResult.values.internalid.value;
                     var agreementId = searchResult.values.custrecord_ps_aad_agreement.value;
-                    var startDate = searchResult.values.custrecord_ps_aad_start_date.value;
+                    var startDate = searchResult.values.custrecord_ps_aad_start_date;
                     var currentdate = moment();
                     if(startDate){
                         if(moment(startDate).isSameOrBefore(currentdate)){

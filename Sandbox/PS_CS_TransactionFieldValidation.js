@@ -2,8 +2,8 @@
  *@NApiVersion 2.x
  *@NScriptType ClientScript
  */
- define(['N/error', 'N/log', 'N/search','./moment.min.js'],
- function(error, log, search, moment) {
+define(['N/error', 'N/log', 'N/search', './moment.min.js', 'N/runtime'],
+function (error, log, search, moment, runtime) {
     var pageLoaderURl = '';
     function pageInit(context) {
         pageLoaderURl = getLoaderGif();
@@ -103,6 +103,10 @@
     function validateLine(context) {
         var currentRecord = context.currentRecord;
         var sublistName = context.sublistId;
+        var currentUserObj = runtime.getCurrentUser();
+        var dateFormat = currentUserObj.getPreference({
+            name: 'dateformat'
+        });
         if(sublistName == "item"){
             debugger;
             var agreementId = currentRecord.getValue('custbody_ps_agreement');
@@ -141,7 +145,7 @@
                         //togglePageLoader(true);
                         //window.setTimeout(function(){
                             try{
-                               var prorateVal = getProRate(startDate, agreementId, billingFreq, rate);
+                               var prorateVal = getProRate(startDate, agreementId, billingFreq, rate, dateFormat);
                                if(prorateVal){
                                     currentRecord.setCurrentSublistValue({
                                         sublistId: 'item',
@@ -173,6 +177,7 @@
     function saveRecord(context){
         var currentRecord = context.currentRecord;
         var agreementId = currentRecord.getValue("custbody_ps_agreement");
+        var orderType = currentRecord.getValue("custbody_nsts_order_type"); //For Athenian
         if(agreementId){
             var tranContractTerm = currentRecord.getValue("custbody_ps_agreement_term");
             if(tranContractTerm){
@@ -183,7 +188,8 @@
                 });
                 if(agreementLookResults && agreementLookResults.custrecord_ps_a_contract_term 
                     && agreementLookResults.custrecord_ps_a_contract_term.length > 0){
-                    if(agreementLookResults.custrecord_ps_a_contract_term[0].value != tranContractTerm){
+                    if(agreementLookResults.custrecord_ps_a_contract_term[0].value != tranContractTerm 
+                        && orderType != "2"){ //For Athenian if order type is not upsell.
                         alert("Contract term doesn't match with the selected agreement contract term.");
                         return false;
                     }
@@ -265,7 +271,7 @@
             pageloader.style.display = "none";
         }
     }
-    function getProRate(startDate, agreementId, billingFreq, rate){
+    function getProRate(startDate, agreementId, billingFreq, rate, dateFormat){
         var prorate = null;
         var nextBillingDateSrch = search.create({
             type: "customrecord_ps_agreement_details",
@@ -275,7 +281,7 @@
                "AND", 
                ["custrecord_ps_aad_billing_frequency","anyof", billingFreq], 
                "AND", 
-               ["custrecord_ps_aad_next_billing_date","onorafter", moment(startDate).format("MM/DD/YYYY")], 
+               ["custrecord_ps_aad_next_billing_date","onorafter", moment(startDate).format(dateFormat)], 
                "AND", 
                ["custrecord_ps_aad_status","anyof","2"]
             ],
