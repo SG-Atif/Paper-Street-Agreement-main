@@ -11,7 +11,7 @@ function(log, search, record) {
             filters:
             [
                ["custrecord_ps_ac_effective_date","on","today"], 
-               //["internalid", "anyof", "317"],
+               //["internalid", "anyof", "3502"],
                "AND", 
                ["custrecord_ps_ac_concluding_event","anyof","2"], 
                "AND", 
@@ -43,6 +43,9 @@ function(log, search, record) {
                             isDynamic: false,
                         });
                         if(currentAgreementDetailRec){
+                            var transactionLineKey = currentAgreementDetailRec.getValue('custrecord_ps_aad_tran_line_key');
+                            var createdFrom = currentAgreementDetailRec.getValue('custrecord_ps_aad_created_from'); 
+                            log.debug({title: "Created from | Line Id", details: createdFrom +" | "+ transactionLineKey});
                             currentAgreementDetailRec.setValue({
                                 fieldId: 'custrecord_ps_aad_status',
                                 value: "3",
@@ -51,6 +54,33 @@ function(log, search, record) {
                                 enableSourcing: true,
                                 ignoreMandatoryFields: true
                             });
+                            if(transactionLineKey && createdFrom){
+                                var createdFromRec =  record.load({
+                                    type: "salesorder",
+                                    id: createdFrom,
+                                    isDynamic: false,
+                                });
+                                if(createdFromRec){
+                                    var lineIndex = createdFromRec.findSublistLineWithValue({
+                                                        sublistId: 'item',
+                                                        fieldId: 'lineuniquekey',
+                                                        value : transactionLineKey
+                                                    });
+                                    log.debug({title: "Created from line index", details: lineIndex});
+                                    if(lineIndex > -1){
+                                        createdFromRec.setSublistValue({
+                                            sublistId: 'item',
+                                            fieldId: "isclosed",
+                                            value: true,
+                                            line : lineIndex
+                                        });
+                                        createdFromRec.save({
+                                            enableSourcing: true,
+                                            ignoreMandatoryFields: true
+                                        });
+                                    }
+                                }
+                            }
                             var isAllLinesCancelled = isAllAgreementDetailCancelled(agreementId);
                             if(isAllLinesCancelled == true){
                                 var currentAgreementRec =  record.load({

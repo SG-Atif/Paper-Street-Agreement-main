@@ -48,7 +48,6 @@
             context.currentRecord.setValue({ fieldId : "custpage_json_data", value : JSON.stringify(jsonData)});
         });
         jQuery("#effective_date").on("change", function(){
-            debugger;
             if(jQuery(this).val()){
                 context.currentRecord.setValue({ fieldId : "custpage_affective_date", value : moment(jQuery(this).attr("data-date")).format(dateFormat)});
             }

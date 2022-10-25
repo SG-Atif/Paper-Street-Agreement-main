@@ -6,11 +6,9 @@
  function(log, search) {
     function pageInit(context) {
         try{
-            debugger;
             var currentRecord = context.currentRecord;
             var agreementTransaction = currentRecord.getValue("custrecord_ps_ap_agreement_creation_tran");
             var agreementTranLookup = currentRecord.getValue("custrecord_ps_ap_agreement_creation_look");
-            debugger;
             if(agreementTransaction && !agreementTranLookup){
                 var lookResults = search.lookupFields({
                     type: 'customrecord_ps_agreement_tran_type',

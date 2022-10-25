@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Agreement</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+	<link rel="stylesheet"
+		href="https://tstdrv2175778.app.netsuite.com/core/media/media.nl?id=4831&c=TSTDRV2175778&h=CVh8L-xcQrk1SVIV_YxiKO4Srp67GoIZXOzZE14O7qoJrZfm&_xt=.css">
+	<style>
+		html {
+			font-size: 12px;
+		}
+
+		body {
+			background-color: rgb(247, 247, 247);
+			font-family: verdana;
+			color: black;
+		}
+
+		.modal .modal-header,
+		.modal .modal-body,
+		.modal .modal-footer {
+			padding: 20px 30px;
+		}
+
+		.modal .modal-content {
+			border-radius: 3px;
+		}
+
+		.modal .modal-footer {
+			background: #ecf0f1;
+			border-radius: 0 0 3px 3px;
+		}
+
+		.modal .modal-title {
+			display: inline-block;
+		}
+
+		.modal .form-control {
+			border-radius: 2px;
+			box-shadow: none;
+			border-color: #dddddd;
+		}
+
+		.modal textarea.form-control {
+			resize: vertical;
+		}
+
+		.modal .btn {
+			border-radius: 2px;
+			min-width: 100px;
+		}
+
+		.modal form label {
+			font-weight: normal;
+		}
+
+		ul.bar_tabs {
+			background-color: #607799 !important;
+			color: white;
+			margin: 21px 0 5px !important;
+			height: 42px !important;
+			padding-left: 0px !important;
+		}
+
+		ul.bar_tabs>li.active {
+			background: #24385B !important;
+			color: black !important;
+			font-weight: bold !important;
+			border: none !important;
+		}
+
+		ul.bar_tabs>li {
+			color: white;
+			border: none !important;
+			font-size: 13px !important;
+			margin-top: 0px !important;
+			margin-left: 0px !important;
+			border-radius: 0px !important;
+		}
+
+		ul.bar_tabs>li a {
+			background: #607799 !important;
+			color: white !important;
+			border: none !important;
+			padding: 11.2px 17px !important;
+			border-radius: 0px !important;
+			font-weight: bold;
+		}
+
+		ul.bar_tabs>li>a:hover,
+		ul.bar_tabs>li.active>a:hover {
+			background: #e0e6ef !important;
+			color: black !important;
+			/* background: url(/uirefresh/img/tabcontainer-selection-compact.png) no-repeat 50% bottom !important; */
+		}
+
+		ul.bar_tabs>li.active>a {
+			background: #24385b !important;
+			color: white !important;
+			/* background: url(/uirefresh/img/tabcontainer-selection-compact.png) no-repeat 50% bottom !important; */
+		}
+
+		/* ul.bar_tabs>li.active:after {
+			content: '' ;
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 35px;
+			margin: 0 auto;
+			width: 0;
+			height: 0;
+			border-bottom: 7px solid rgb(247, 247, 247);
+			border-left: 10px solid transparent;
+			border-right: 10px solid transparent;
+		} */
+		.table-wrapper {
+			margin: 0px auto;
+			background: #fff;
+			padding: 20px;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+		}
+
+		.table-title {
+			padding-bottom: 10px;
+			margin: 0 0 10px;
+		}
+
+		.table-title h2 {
+			margin: 6px 0 0;
+			font-size: 19px;
+		}
+
+		.table-title .add-new {
+			float: right;
+			height: 30px;
+			font-weight: bold;
+			font-size: 12px;
+			text-shadow: none;
+			min-width: 100px;
+			border-radius: 50px;
+			line-height: 13px;
+		}
+
+		.table-title .add-new i {
+			margin-right: 4px;
+		}
+
+		table.table {
+			table-layout: fixed;
+		}
+
+		table.table tr th,
+		table.table tr td {
+			border-color: #e9e9e9;
+		}
+
+		table.table th i {
+			font-size: 13px;
+			margin: 0 5px;
+			cursor: pointer;
+		}
+
+		table.table th:last-child {
+			width: 100px;
+		}
+
+		table.table td a {
+			cursor: pointer;
+			display: inline-block;
+			margin: 0 5px;
+			min-width: 24px;
+		}
+
+		table.table td a.add {
+			color: #27C46B;
+		}
+
+		table.table td a.edit {
+			color: #FFC107;
+		}
+
+		table.table td a.delete {
+			color: #E34724;
+		}
+
+		table.table td i {
+			font-size: 19px;
+		}
+
+		table.table td a.add i {
+			font-size: 24px;
+			margin-right: -1px;
+			position: relative;
+			top: 3px;
+		}
+
+		table.table .form-control {
+			height: 32px;
+			line-height: 32px;
+			box-shadow: none;
+			border-radius: 2px;
+		}
+
+		table.table .form-control.error {
+			border-color: #f50000;
+		}
+
+		table.table td .add {
+			display: none;
+		}
+
+		label,
+		th {
+			font-size: 13px !important;
+		}
+
+		form select,
+		form input {
+			font-size: 13px !important;
+		}
+
+		td {
+			font-size: 12px;
+		}
+
+		.form-check-input {
+			-ms-transform: scale(1.4);
+			-moz-transform: scale(1.4);
+			-webkit-transform: scale(1.4);
+			-o-transform: scale(1.4);
+			margin-left: 10px !important;
+		}
+
+		.modal-notify .modal-header {
+			border-radius: 3px 3px 0 0;
+		}
+
+		.modal-notify .modal-content {
+			border-radius: 3px;
+		}
+
+		.modal .modal-dialog {
+			max-width: 70% !important;
+		}
+
+		@media (min-width: 768px) {
+			.modal-dialog {
+				max-width: 70% !important;
+				margin: 30px auto;
+			}
+		}
+
+		.close {
+			opacity: 1;
+		}
+
+		.modal form label {
+			font-weight: bold !important;
+		}
+
+		.select2-results__option {
+			padding: 2px !important;
+		}
+
+		.select2-selection {
+			min-height: 34px !important;
+		}
+		.select2-selection__rendered{
+			color: #555 !important;
+			padding-top: 2px !important;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="errorMappingModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content" style="max-width: 400px;">
+				<form>
+					<div class="modal-header" style="background: #d9534f;color: #fff;">
+						<h4 class="modal-title">Error</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+							style="color: white;opacity: 0.6;">&times;</button>
+					</div>
+					<div class="modal-body">
+						<p></p>
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="container" style="width: 100%;font-size:14px;">
+		<div class="row" style="margin-top: 10px;">
+			<div class="col-md-12">
+				<h2 style="margin:0 auto;margin-bottom: 20px;font-weight: bold;margin-left: 33px;">
+					Agreement <span id="agreement_id"></span></h2>
+			</div>
+			<div class="col-md-8" style="margin-left: 33px;">
+				<input type="button" class="btn btn-primary" id="btn_agreement_edit" value="Edit" style="min-width: 120px;background: #24385b;">
+				<input type="button" class="btn btn-primary" id="btn_agreement_save" value="Save" style="min-width: 120px;background: #24385b;">
+				<!-- <input type="button" class="btn btn-success" value="New" style="min-width: 120px;"> -->
+				<input type="button" class="btn btn-danger" id="btn_agreement_cancel" value="Cancel Agreement" style="min-width: 150px;">
+			</div>
+		</div>
+		<div>
+			<br />
+			<form id="form_header_flds">
+				<div class="col-md-12">
+					<div class="form-row">
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_subsidiary">Subsidiary:<span style="color: #d41111;">*</span></label>
+								<select class="form-control required" id="dd_subsidiary" required></select>
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_customers">Customer:<span style="color: #d41111;">*</span></label>
+								<select class="form-control required" id="dd_customers" required></select>
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_currencies">Currency:<span style="color: #d41111;">*</span></label>
+								<select class="form-control required" id="dd_currencies" required></select>
+							</div>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_payment_methods">Payment Method:<span style="color: #d41111;">*</span></label>
+								<select class="form-control required" id="dd_payment_methods" required></select>
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_contract_terms">Contract Term:<span
+										style="color: #d41111;">*</span></label>
+								<select class="form-control required" id="dd_contract_terms" required></select>
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="txt_required_monthly_min">Required Monthly Minimum:</label>
+								<input type="text" id="txt_required_monthly_min" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="txt_agreement_start">Agreement Start:<span
+										style="color: #d41111;">*</span></label>
+								<input type="date" id="txt_agreement_start" class="form-control required" required />
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="txt_agreement_end">Agreement End:<span
+										style="color: #d41111;">*</span></label>
+								<input type="date" id="txt_agreement_end" class="form-control required" required />
+							</div>
+						</div>
+						<div class="form-group col-md-4 col-sm-6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label for="dd_agreement_status_list">Status:</label>
+								<select id="dd_agreement_status_list" class="form-control"></select>
+							</div>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group  col-md-4 c6 col-12">
+							<div class="col-md-9 col-sm-10">
+								<label class="form-check-label" for="cb_evergreen">Evergreen:</label>
+								<input type="checkbox" id="cb_evergreen" class="form-check-input" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<form>
+				<div class="col-md-12">
+					<div class="x_content">
+						<ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+							<li class="nav-item active">
+								<a class="nav-link" id="home-tab" data-toggle="tab" href="#AgreementDetailLines"
+									role="tab" aria-controls="home" aria-selected="true">Lines</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="profile-tab" data-toggle="tab" href="#transactions" role="tab"
+									aria-controls="profile" aria-selected="false">Transactions</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="contact-tab" data-toggle="tab" href="#conclusionEvents"
+									role="tab" aria-controls="contact" aria-selected="false">Concluding Events</a>
+							</li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade active in" id="AgreementDetailLines" role="tabpanel"
+								aria-labelledby="AgreementDetailLines-tab">
+								<div class="table-responsive">
+									<div class="table-wrapper">
+										<div class="table-title">
+											<div class="row">
+												<div class="col-sm-8">
+													<h2>Agreement Detail Lines</h2>
+												</div>
+												<div class="col-sm-4" style="text-align: right;">
+													<button type="button" class="btn btn-primary"
+														id="btn_new_agreement_line" style="background: #24385b;"><i
+															class="fa fa-plus"></i> Add
+														New</button>
+												</div>
+											</div>
+										</div>
+										<table class="table table-bordered" id="tbl_agreement_detail_lies">
+											<thead>
+												<tr>
+													<th class="col-md-1">Actions</th>
+													<th>Item</th>
+													<th>Quantity</th>
+													<th>Rate</th>
+													<th>Billing Frequency</th>
+													<th>Start Date</th>
+													<th>End Date</th>
+													<th>Next Billing Date</th>
+													<th>Status</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane fade" id="transactions" role="tabpanel"
+								aria-labelledby="transactions-tab">
+								<div class="table-responsive">
+									<div class="table-wrapper">
+										<div class="table-title">
+											<div class="row">
+												<div class="col-sm-8">
+													<h2>Agreement Transactions</h2>
+												</div>
+												<div class="col-sm-4">
+												</div>
+											</div>
+										</div>
+										<table class="table table-bordered" id="tbl_agreement_transactions">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Type</th>
+													<th>Document Number</th>
+													<th>Amount</th>
+													<th>Amount (Foreign Currency)</th>
+													<th>Currency</th>
+													<th>Status</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane fade" id="conclusionEvents" role="tabpanel"
+								aria-labelledby="conclusionEvents-tab">
+								<div class="table-responsive">
+									<div class="table-wrapper">
+										<div class="table-title">
+											<div class="row">
+												<div class="col-sm-8">
+													<h2>Agreement Concluding Events</h2>
+												</div>
+												<div class="col-sm-4" style="text-align: right;">
+												</div>
+											</div>
+										</div>
+										<table class="table table-bordered" id="tbl_agreement_conclusion_events">
+											<thead>
+												<tr>
+													<th>Agreement Line</th>
+													<th>Event</th>
+													<th>Effective Date</th>
+													<th>Reason</th>
+													<th style="width: 10%;">Renewed Agreement</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="modal fade" id="newAgreementLineModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-notify modal-warning " role="document"
+			style="margin: 0 auto;width: 100%;top: 3%;">
+			<!--Content-->
+			<div class="modal-content" style="font-size: 12px;">
+				<!--Header-->
+				<div class="modal-header text-center" style="background: #607799;color: white;font-weight: bold;">
+					<h4 class="modal-title white-text w-100 font-weight-bold py-2">New Agreement Detail Line</h4>
+					<button type="button" id="btn_line_modal_close" class="close" data-dismiss="modal"
+						aria-label="Close" style="color: white;">
+						<span aria-hidden="true" class="white-text" style="color: white;opacity: .7;">×</span>
+					</button>
+				</div>
+				<!--Body-->
+				<div class="modal-body" style="background-color: rgb(247, 247, 247);">
+					<form id="modal_form">
+						<div class="col-md-12">
+							<div class="form-row">
+								<div class="form-group col-md-4 hide">
+									<div class="col-md-12 hide" style="height: 56px;">
+										<label for="txt_line_context hide">Popup Context:</label>
+										<input type="text" class="form-control hide" id="txt_line_context" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4 hide">
+									<div class="col-md-12 hide" style="height: 56px;">
+										<label for="txt_line_sid hide">Line SId:</label>
+										<input type="text" class="form-control hide" id="txt_line_sid" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4 hide">
+									<div class="col-md-12 hide" style="height: 56px;">
+										<label for="txt_line_id hide">Line Id:</label>
+										<input type="text" class="form-control hide" id="txt_line_id" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12" style="height: 56px;">
+										<label for="dd_line_items">Item:<span style="color: #d41111;">*</span></label>
+										<select class="form-control required" id="dd_line_items" required
+											style="width: 100%;height: 38px;"></select>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_qty">Quantity:<span
+												style="color: #d41111;">*</span></label>
+										<input type="number" class="form-control required" id="txt_line_qty" required />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_rate">Rate:<span style="color: #d41111;">*</span></label>
+										<input type="number" class="form-control required" id="txt_line_rate"
+											required />
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-4">
+									<div class="col-md-12" style="height: 56px;">
+										<label for="dd_line_pricelevel">Price Level:</label>
+										<select class="form-control" id="dd_line_pricelevel"
+											style="width: 100%;height: 38px;"></select>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_amount">Amount:</label>
+										<input type="number" class="form-control" id="txt_line_amount" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_billingFreq">Billing Frequency:<span
+												style="color: #d41111;">*</span></label>
+										<select class="form-control required" id="dd_line_billingFreq"
+											required></select>
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_start_date">Start Date:<span
+												style="color: #d41111;">*</span></label>
+										<input type="date" class="form-control required" id="txt_line_start_date"
+											required />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_end_date">End Date:<span
+												style="color: #d41111;">*</span></label>
+										<input type="date" class="form-control required" id="txt_line_end_date"
+											required />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_nextbill_date">Next Billing Date:</label>
+										<input type="date" class="form-control" id="txt_line_nextbill_date" disabled="disabled" />
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_renewal_date">Next Renewal Date:</label>
+										<input type="date" class="form-control" id="txt_line_renewal_date" />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_lastbill_date">Last Billing Date:</label>
+										<input type="date" class="form-control" id="txt_line_lastbill_date" disabled="disabled"/>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_status">Status:</label>
+										<select class="form-control" id="dd_line_status"></select>
+									</div>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_agreement_type">Agreement Type:<span
+												style="color: #d41111;">*</span></label>
+										<select class="form-control" id="dd_line_agreement_type" required></select>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_pricingtype">Pricing Type:</label>
+										<select class="form-control" id="dd_line_pricingtype"></select>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_req_min">Required Minimum:</label>
+										<input type="number" class="form-control" id="txt_line_req_min" />
+									</div>
+								</div>
+							</div>
+							<div class="form-row hide">
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_createdfrom">Transaction:</label>
+										<input type="text" class="form-control" id="dd_line_createdfrom" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="txt_line_tranlinekey">Trasaction Line Key:</label>
+										<input type="text" class="form-control" id="txt_line_tranlinekey" disabled />
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<div class="col-md-12">
+										<label for="dd_line_usagegroup">Usage Group:</label>
+										<select class="form-control" id="dd_line_usagegroup"></select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!--Footer-->
+				<div class="modal-footer justify-content-center"
+					style="background: #d4d9da !important;padding: 13px 30px !important;">
+					<button class="btn btn-primary" id="agreementLineSubmit" style="background: #24385b;">Submit</button>
+					<button class="btn btn-primary" id="agreementLineClose" style="background: #24385b;">Close</button>
+				</div>
+			</div>
+			<!--/.Content-->
+		</div>
+	</div>
+	<script>
+		var csScriptUrl = '/SuiteScripts/SG Scripts/PS Agreement/PS_CS_Agreement_Page_Helper';
+		var pageLoaderURL;
+		var agreementLines = [];
+		var agreementId;
+		var suiteletUrl;
+		var context;
+		var cancellationSuiteletUrl;
+		$(document).ready(function () {
+			onLoad();
+			//Clinet Side Events
+			$("#dd_subsidiary").on("change", function(){
+				var currentSubsidiary = $(this).val();
+				if(isEmpty(currentSubsidiary)){
+					$("#dd_customers").attr("disabled", "disbaled");
+					$("#dd_contract_terms").attr("disabled", "disbaled");
+				}
+				else{
+					$("#dd_customers").select2('destroy');
+					$("#dd_customers").removeAttr("disabled", "disbaled");
+					$("#dd_contract_terms").removeAttr("disabled", "disbaled");
+					$("#dd_customers").html(parent.custpage_customer_list.value);
+					$("#dd_contract_terms").html(parent.custpage_contract_term_list.value);
+					$("#dd_customers").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != currentSubsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					$("#dd_contract_terms").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != currentSubsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					$("#dd_customers").select2({
+						width: 'resolve',
+						dropdownParent: $("#form_header_flds")
+					});
+				}
+			});
+			$("#dd_line_items").on("change", function () {
+				var agreementType = $("#dd_line_items option:selected").data("agreementtype");
+				if (agreementType) {
+					$("#dd_line_agreement_type").val(agreementType);
+				}
+			});
+			$("#btn_agreement_cancel").on("click", function(){
+				parent.window.open(cancellationSuiteletUrl, "_self");
+			});
+			$("#btn_agreement_edit").on("click", function(){
+				var url = suiteletUrl + "&agreementId="+agreementId+"&context=edit";
+				parent.window.location.href = url;
+			});
+			$("#txt_line_qty, #txt_line_rate").on("change", function(){
+				var qty = parseFloat($("#txt_line_qty").val()||0);
+				var rate = parseFloat($("#txt_line_rate").val()||0);
+				$("#txt_line_amount").val(qty*rate);
+			});
+			$(document).on("click", "#btn_new_agreement_line", function () {
+				var lineItems = parent.custpage_line_items.value;
+				$("#dd_line_items").html(lineItems);
+				var isValid = checkRequiredFields("#form_header_flds");
+				if (isValid == true) {
+					//Filter down item dropdown by subsidiary
+					var currentOptionSubsidiary, includeChildren;
+					var subsidiary = $("#dd_subsidiary").val();
+					$("#dd_line_items").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					$("#dd_line_items").select2({
+						width: 'resolve',
+						dropdownParent: $("#newAgreementLineModal")
+					});
+					//Set Default Start And End Date
+					$("#txt_line_context").val("create");
+					$("#txt_line_start_date").val($("#txt_agreement_start").val());
+					$("#txt_line_end_date").val($("#txt_agreement_end").val());
+					$("#agreementLineClose").hide();
+					$("#agreementLineSubmit").show();
+					$("#newAgreementLineModal").find(".modal-title").html("New Agreement Detail Line");
+					//Display popup window
+					var offset = $(window.parent.document).scrollTop();
+					viewportHeight = $(window).height();
+					$('#newAgreementLineModal').css('top', (offset + (viewportHeight / 2)) - ($('#newAgreementLineModal').outerHeight() / 2));
+					$("#newAgreementLineModal").modal({ backdrop: 'static', keyboard: false }, "show");
+					$(window.parent.document.body).css("overflow", "hidden");
+				}
+				else {
+					$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
+					$("#errorMappingModal").modal("show");
+				}
+			});
+			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_view", function(){
+				var lineItems = parent.custpage_line_items.value;
+				$("#dd_line_items").html(lineItems);
+				var subsidiary = $("#dd_subsidiary").val();
+				if (subsidiary) {
+					//Filter down item dropdown by subsidiary
+					var currentOptionSubsidiary, includeChildren;
+					$("#dd_line_items").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					var lineId = $(this).parents("tr").data("id");
+					var rowIndex = $(this).parents("tr").index();
+					var currentLineDetails = [];
+					if(isEmpty(lineId)){
+						currentLineDetails = agreementLines[rowIndex] ? [agreementLines[rowIndex]] : [];
+					}
+					else{
+						currentLineDetails = agreementLines.filter(function(x){return x.id == lineId});
+					}
+					if(currentLineDetails && currentLineDetails.length > 0){
+						$("#txt_line_id").val(currentLineDetails[0].id);
+						$("#txt_line_context").val("view");
+						$("#dd_line_items").val(currentLineDetails[0].itemId);
+						$("#txt_line_qty").val(currentLineDetails[0].quantity);
+						$("#txt_line_rate").val(currentLineDetails[0].rate);
+						$("#txt_line_amount").val(currentLineDetails[0].amount);
+						$("#dd_line_pricelevel").select2("val", currentLineDetails[0].priceLevelId);
+						$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
+						$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
+						$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
+						$("#txt_line_renewal_date").val(isEmpty(currentLineDetails[0].renewalDate) ? "" : moment(currentLineDetails[0].renewalDate).format('YYYY-MM-DD'));
+						$("#txt_line_lastbill_date").val(isEmpty(currentLineDetails[0].lastBillingDate) ? "" : moment(currentLineDetails[0].lastBillingDate).format('YYYY-MM-DD'));
+						$("#dd_line_usagegroup").val(currentLineDetails[0].usageGroup);
+						$("#txt_line_req_min").val(currentLineDetails[0].requiredMinimum);
+						$("#txt_line_tranlinekey").val(currentLineDetails[0].transactionLineUniqueKey);
+						$("#dd_line_createdfrom").val(currentLineDetails[0].createdFromTransaction);
+						setDropDownValueByText("#dd_line_agreement_type", isEmpty(currentLineDetails[0].agreementLineType) ? "" : currentLineDetails[0].agreementLineType);
+						setDropDownValueByText("#dd_line_pricingtype", isEmpty(currentLineDetails[0].agreementPricingType) ? "" : currentLineDetails[0].agreementPricingType);
+						setDropDownValueByText("#dd_line_status", isEmpty(currentLineDetails[0].status) ? "" : currentLineDetails[0].status);
+						setDropDownValueByText("#dd_line_billingFreq", isEmpty(currentLineDetails[0].billingFrequency) ? "" : currentLineDetails[0].billingFrequency);
+						$("#dd_line_items").select2({
+							width: 'resolve',
+							dropdownParent: $("#newAgreementLineModal")
+						});
+						//Display popup window
+						disableAllControls("#newAgreementLineModal");
+						$("#agreementLineClose").show();
+						$("#agreementLineSubmit").hide();
+						$("#newAgreementLineModal").find(".modal-title").html("Agreement Detail Line");
+						var offset = $(window.parent.document).scrollTop();
+						viewportHeight = $(window).height();
+						$("#newAgreementLineModal").css('top', (offset + (viewportHeight / 2)) - ($('#newAgreementLineModal').outerHeight() / 2));
+						$("#newAgreementLineModal").modal({ backdrop: 'static', keyboard: false }, "show");
+						$(window.parent.document.body).css("overflow", "hidden");
+					}
+					else{
+						$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to find current line data for this page.");
+						$("#errorMappingModal").modal("show");
+					}
+				}
+				else {
+					$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
+					$("#errorMappingModal").modal("show");
+				}
+			});
+			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_edit", function () {
+				$("#dd_line_items").html(parent.custpage_line_items.value);
+				var subsidiary = $("#dd_subsidiary").val();
+				if (subsidiary) {
+					//Filter down item dropdown by subsidiary
+					var currentOptionSubsidiary, includeChildren;
+					$("#dd_line_items").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					$("#dd_line_billingFreq").html(parent.custpage_line_billingfrequency.value);
+					$("#dd_line_billingFreq").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					debugger;
+					var lineId = $(this).parents("tr").data("id");
+					var rowIndex = $(this).parents("tr").index();
+					var sId = $(this).parents("tr").data("sid");
+					var currentLineDetails = [];
+					if(isEmpty(lineId)){
+						currentLineDetails = agreementLines[rowIndex] ? [agreementLines[rowIndex]] : [];
+					}
+					else{
+						currentLineDetails = agreementLines.filter(function(x){return x.id == lineId});
+					}
+					if(currentLineDetails && currentLineDetails.length > 0){
+						$("#txt_line_context").val("edit");
+						$("#txt_line_sid").val(sId);
+						$("#txt_line_id").val(currentLineDetails[0].id);
+						$("#dd_line_items").val(currentLineDetails[0].itemId);
+						$("#txt_line_qty").val(currentLineDetails[0].quantity);
+						$("#txt_line_rate").val(currentLineDetails[0].rate);
+						$("#txt_line_amount").val(currentLineDetails[0].amount);
+						$("#dd_line_pricelevel").select2("val", currentLineDetails[0].priceLevelId);
+						$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
+						$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
+						$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
+						$("#txt_line_renewal_date").val(isEmpty(currentLineDetails[0].renewalDate) ? "" : moment(currentLineDetails[0].renewalDate).format('YYYY-MM-DD'));
+						$("#txt_line_lastbill_date").val(isEmpty(currentLineDetails[0].lastBillingDate) ? "" : moment(currentLineDetails[0].lastBillingDate).format('YYYY-MM-DD'));
+						$("#dd_line_usagegroup").val(currentLineDetails[0].usageGroup);
+						$("#txt_line_req_min").val(currentLineDetails[0].requiredMinimum);
+						$("#txt_line_tranlinekey").val(currentLineDetails[0].transactionLineUniqueKey);
+						$("#dd_line_createdfrom").val(currentLineDetails[0].createdFromTransaction);
+						setDropDownValueByText("#dd_line_agreement_type", isEmpty(currentLineDetails[0].agreementLineType) ? "" : currentLineDetails[0].agreementLineType);
+						setDropDownValueByText("#dd_line_pricingtype", isEmpty(currentLineDetails[0].agreementPricingType) ? "" : currentLineDetails[0].agreementPricingType);
+						setDropDownValueByText("#dd_line_status", isEmpty(currentLineDetails[0].status) ? "" : currentLineDetails[0].status);
+						setDropDownValueByText("#dd_line_billingFreq", isEmpty(currentLineDetails[0].billingFrequency) ? "" : currentLineDetails[0].billingFrequency);
+						$("#dd_line_items").select2({
+							width: 'resolve',
+							dropdownParent: $("#newAgreementLineModal")
+						});
+						//Display popup window
+						$("#agreementLineClose").hide();
+						$("#agreementLineSubmit").show();
+						$("#newAgreementLineModal").find(".modal-title").html("Agreement Detail Line");
+						var offset = $(window.parent.document).scrollTop();
+						viewportHeight = $(window).height();
+						$('#newAgreementLineModal').css('top', (offset + (viewportHeight / 2)) - ($('#newAgreementLineModal').outerHeight() / 2));
+						$("#newAgreementLineModal").modal({ backdrop: 'static', keyboard: false }, "show");
+						$(window.parent.document.body).css("overflow", "hidden");
+					}
+					else{
+							$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to find current line data for this page.");
+							$("#errorMappingModal").modal("show");
+						}
+				}
+				else {
+					$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
+					$("#errorMappingModal").modal("show");
+				}
+			});
+			$("#newAgreementLineModal").on("click", "#btn_line_modal_close, #agreementLineClose", function () {
+				$("#newAgreementLineModal").modal("hide");
+				$(window.parent.document.body).css("overflow", "auto");
+				$("#dd_line_items").select2('destroy');
+				resetFields("#newAgreementLineModal");
+			});
+			$("#newAgreementLineModal").on("click", "#agreementLineSubmit", function () {
+				var isValid = checkRequiredFields("#modal_form");
+				if (isValid == true) {
+					var dateValidation = validateLineDate();
+					if(dateValidation.isValid == true){
+						var lines = [];
+						var lineDetail = {
+							"id" : $("#txt_line_id").val(),
+							"sId": $("#txt_line_sid").val(),
+							"agreement": agreementId,
+							"itemId": $("#dd_line_items option:selected").val(),
+							"item": $("#dd_line_items option:selected").text(),
+							"itemType": $("#dd_line_items").select2().find(":selected").data("type"),
+							"quantity": $("#txt_line_qty").val(),
+							"rate": $("#txt_line_rate").val(),
+							"amount": $("#txt_line_amount").val(),
+							"priceLevel": $("#dd_line_pricelevel option:selected").text(),
+							"priceLevelId": $("#dd_line_pricelevel option:selected").val(),
+							"billingFrequency": $("#dd_line_billingFreq option:selected").text(),
+							"billingFrequencyId": $("#dd_line_billingFreq option:selected").val(),
+							"createdFromTransactionId": $("#dd_line_createdfrom option:selected").val(),
+							"transactionLineUniqueKey": $("#txt_line_tranlinekey").val(),
+							"agreementPricingType": $("#dd_line_pricingtype option:selected").text(),
+							"agreementLineType": $("#dd_line_agreement_type option:selected").text(),
+							"requiredMinimum": $("#txt_line_req_min").val(),
+							"isClosed": false,
+							"status": $("#dd_line_status option:selected").text(),
+							"usageGroup": $("#dd_line_usagegroup option:selected").text(),
+							"startDate": moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value),
+							"endDate": moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value),
+							"nextBillingDate": moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value),
+							"lastBillingDate": moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value),
+							"nextRenewalDate": moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value),
+						};
+						if($("#txt_line_context").val() == "create"){
+							lineDetail.sId = parseFloat(agreementLines.length||0)+1;
+						}
+						//lines.push(lineDetail);
+						var requestParam = {
+							"method": "CreateAgreementLines",
+							"data": lines
+						}
+						var groupMembers;
+						var response;
+						var entryPointRequire = getClinetConfig();
+						togglePageLoader(true);
+						window.setTimeout(function () {
+							entryPointRequire([csScriptUrl], function (mod) {
+								try {
+									groupMembers = mod.getGroupItemMembers($("#dd_line_items option:selected").val());
+									if (groupMembers && groupMembers.length > 0) {
+										for (var m = 0; m < groupMembers.length; m++) {
+											var newMemberLine = {
+												"agreement": agreementId,
+												"itemId": groupMembers[m].id,
+												"item": groupMembers[m].name,
+												"itemType": $("#dd_line_items").select2().find(":selected").data("type"),
+												"quantity": parseFloat($("#txt_line_qty").val()) * (groupMembers[m].qty),
+												"rate": groupMembers[m].rate,
+												"priceLevel": $("#dd_line_pricelevel option:selected").text(),
+												"billingFrequency": $("#dd_line_billingFreq option:selected").text(),
+												"billingFrequencyId": $("#dd_line_billingFreq option:selected").val(),
+												"createdFromTransactionId": $("#dd_line_createdfrom option:selected").val(),
+												"transactionLineUniqueKey": $("#txt_line_tranlinekey").val(),
+												"agreementPricingType": $("#dd_line_pricingtype option:selected").text(),
+												"agreementLineType": $("#dd_line_agreement_type option:selected").text(),
+												"requiredMinimum": $("#txt_line_req_min").val(),
+												"isClosed": false,
+												"status": $("#dd_line_status option:selected").text(),
+												"usageGroup": $("#dd_line_usagegroup option:selected").text(),
+												"startDate": moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value),
+												"endDate": moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value),
+												"nextBillingDate": moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value),
+												"lastBillingDate": moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value),
+												"nextRenewalDate": moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value),
+											};
+											if($("#txt_line_context").val() == "create"){
+												newMemberLine.sId =  parseFloat(agreementLines.length||0)+1+m;
+											}
+											lines.push(newMemberLine);
+										}
+									}
+									else {
+										lines.push(lineDetail);
+									}
+									requestParam = {
+										"method": "CreateOrUpdateAgreementLines",
+										"data": lines
+									}
+									console.log(requestParam);
+									if(agreementId && context == "view"){
+										if (requestParam.data && requestParam.data.length > 0) {
+											response = mod.sendAPICall(requestParam, parent.custpage_api_url.value, "POST");
+											if(response){
+												response = JSON.parse(JSON.parse(response));
+												console.log(response);
+												if(response.success.length > 0){
+													console.log(response.success.length +" ||| "+ requestParam.data.length);
+													if(response.success.length == requestParam.data.length){
+														for(var s = 0; s < response.success.length; s++){
+															agreementLines = agreementLines.filter(function(n){return n.id != response.success[s].id});
+															agreementLines.push(response.success[s].data[0]);
+															populateAgreementLines(response.success[s].data);
+															resizeIframe();
+														}
+														$("#btn_line_modal_close").click();
+													}
+												}
+												else if(response.fail.length > 0){
+													toggleAlert("#newAgreementLineModal .modal-body", "<strong>Error!</strong> "+response.fail[0].message);
+												}
+											}
+											togglePageLoader(false);
+										}
+										else {
+											togglePageLoader(false);
+										}
+									}
+									else{
+										populateAgreementLines(lines);
+										if(agreementLines && agreementLines.length > 0){
+											var fitleredArray;
+											var selectedLines = lines;
+											for(var k = 0; k < agreementLines.length; k++){
+												for(var n = 0; n < selectedLines.length; n++){
+													if(selectedLines[n].id){
+														if(selectedLines[n].id == agreementLines[k].id){
+															agreementLines[k] = selectedLines[n];
+															selectedLines.splice(n, 1);
+															break;
+														}
+													}
+													else if(selectedLines[n].sId){
+														if(selectedLines[n].sId == agreementLines[k].sId){
+															agreementLines[k] = selectedLines[n];
+															selectedLines.splice(n, 1);
+															break;
+														}
+													}
+												}
+											}
+											if(selectedLines && selectedLines.length > 0){
+												agreementLines = agreementLines.concat(selectedLines);
+											}
+										}
+										else {
+											agreementLines = agreementLines.concat(lines);
+										}
+										resizeIframe();
+										togglePageLoader(false);
+										$("#btn_line_modal_close").click();
+									}
+								}
+								catch (exp) {
+									togglePageLoader(false);
+									console.log(exp);
+								}
+							});
+						}, 500);
+					}
+					else{
+						toggleAlert("#newAgreementLineModal .modal-body", "<strong>Error!</strong> "+ dateValidation.message);
+					}
+				}
+				else {
+					toggleAlert("#newAgreementLineModal .modal-body", "<strong>Error!</strong> Please enter required field values.");
+				}
+			});
+			$(document).on("click", "#btn_agreement_save", function(){
+				var isValid = checkRequiredFields("#form_header_flds");
+				if(isValid == false){
+					$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
+					$("#errorMappingModal").modal("show");
+				}
+				else if(isEmpty(agreementLines)){
+					$("#errorMappingModal .modal-body > p").html("Please add atleast one agreement detail line record.");
+					$("#errorMappingModal").modal("show");
+				}
+				else {
+					var agreementData = {
+						id: agreementId,
+						customer: $("#dd_customers option:selected").text(),
+						customerId: $("#dd_customers option:selected").val(),
+						subsidiary: $("#dd_subsidiary option:selected").text(),
+						subsidiaryId: $("#dd_subsidiary").val(),
+						term: $("#dd_contract_terms option:selected").text(),
+						paymentMethod: $("#dd_payment_methods option:selected").text(),
+						currency: $("#dd_currencies option:selected").text(),
+						requiredMinimum: $("#txt_required_monthly_min").val(),
+						startDate: moment($("#txt_agreement_start").val()).format(parent.custpage_pref_date_format.value),
+						endDate: moment($("#txt_agreement_end").val()).format(parent.custpage_pref_date_format.value),
+						lines : agreementLines
+					}
+					requestParam = {
+						"method": "CreateOrUpdateCompleteAgreement",
+						"data": agreementData
+					}
+					var response;
+					var entryPointRequire = getClinetConfig();
+					togglePageLoader(true);
+					window.setTimeout(function () {
+						entryPointRequire([csScriptUrl], function (mod) {
+							try{
+								response = mod.sendAPICall(requestParam, parent.custpage_api_url.value, "POST");
+								if(response){
+									response = JSON.parse(JSON.parse(response));
+									console.log(response);
+									if(response.isValid == true){
+										togglePageLoader(false);
+										$("#errorMappingModal .modal-title").html("Info");
+										$("#errorMappingModal .modal-body > p").html("Agreement saved successfully.");
+										$("#errorMappingModal").modal("show");
+										parent.window.location.href = response.url;
+									}
+									else{
+										$("#errorMappingModal .modal-body > p").html(response.message);
+										$("#errorMappingModal").modal("show");
+										togglePageLoader(false);
+									}
+								}
+							}
+							catch(error){
+								togglePageLoader(false);
+								console.log(error);
+							}
+						});
+					}, 1000);
+				}
+			});
+		});
+		function onLoad(){
+			context = parent.custpage_context.value;
+			suiteletUrl = parent.custpage_suitelet_url.value;
+			agreementId = parent.custpage_agreement_id.value;
+			pageLoaderURL = parent.custpage_page_loader.value;
+			cancellationSuiteletUrl = parent.custpage_cancellation_sl.value;
+			if(agreementId && (context == "edit" || context == "view")){
+				$("#btn_agreement_cancel").show();
+			}
+			else{
+				$("#btn_agreement_cancel").hide();
+			}
+			$(".uir-page-title", window.parent.document).hide();
+			$(parent.body).css("background", "rgb(247, 247, 247)");
+			$(parent.div__body).attr("style", "padding: 0 !important; padding-top: 5px !important");
+			$("#agreement_id").html(agreementId);
+			populateControlList();
+			var agreementDetails = parent.custpage_agreement_detail.value;
+			if (agreementDetails) {
+				agreementDetails = JSON.parse(agreementDetails)
+				console.log(agreementDetails);
+				setFieldValue("#dd_subsidiary", agreementDetails.subsidiaryId, true);
+				if(agreementDetails.subsidiaryId){
+					if( agreementDetails.status == "3"){
+						$("#btn_agreement_cancel").hide();
+					}
+					$("#dd_customers").select2('destroy');
+					$("#dd_customers").removeAttr("disabled", "disbaled");
+					$("#dd_contract_terms").removeAttr("disabled", "disbaled");
+					$("#dd_customers").html(parent.custpage_customer_list.value);
+					$("#dd_contract_terms").html(parent.custpage_contract_term_list.value);
+					$("#dd_customers").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != agreementDetails.subsidiaryId && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					$("#dd_contract_terms").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != agreementDetails.subsidiaryId && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
+					setFieldValue("#dd_customers", agreementDetails.customerId, true);
+					setFieldValue("#dd_contract_terms", agreementDetails.termId, true);
+					$("#dd_customers").select2({
+						width: 'resolve',
+						dropdownParent: $("#form_header_flds")
+					});
+				}
+				setFieldValue("#dd_currencies", agreementDetails.currency, false);
+				setFieldValue("#dd_agreement_status_list", agreementDetails.status, false);
+				setFieldValue("#dd_payment_methods", agreementDetails.paymentMethodId, true);
+				if (agreementDetails.startDate) {
+					setFieldValue("#txt_agreement_start", moment(agreementDetails.startDate).format('YYYY-MM-DD'), true);
+				}
+				if (agreementDetails.endDate) {
+					setFieldValue("#txt_agreement_end", moment(agreementDetails.endDate).format('YYYY-MM-DD'), true);
+				}
+				setFieldValue("#txt_required_monthly_min", agreementDetails.requiredMinimum, true);
+				//Populate Lines
+				agreementLines = agreementDetails.lines || [];
+				populateAgreementLines(agreementDetails.lines);
+				//Populate Transactions
+				populateTrsanctions(agreementDetails.transactions);
+				//Populate Conclusion Events
+				populateConclusionEvents(agreementDetails.conclusionEvents);
+			}
+			resizeIframe();
+			if(context == "view"){
+				disableAllControls("#form_header_flds");
+				$("#btn_agreement_save").hide();
+				$("#btn_agreement_edit").show();
+			}
+			else if(context == "edit" || context == "create"){
+				$("#btn_agreement_edit").hide();
+				$("#btn_agreement_save").show();
+			}
+			var subsidiary = $("#dd_subsidiary").val();
+			if(isEmpty(subsidiary)){
+				$("#dd_customers").attr("disabled", "disbaled");
+				$("#dd_contract_terms").attr("disabled", "disbaled");
+			}
+		}
+		function populateControlList() {
+			var subsidiaries = parent.custpage_subsidiary_list.value;
+			var customers = parent.custpage_customer_list.value;
+			var currencies = parent.custpage_currency_list.value;
+			var statusList = parent.custpage_agreement_status_list.value;
+			var contractTerms = parent.custpage_contract_term_list.value;
+			var paymentMethods = parent.custpage_payment_method_list.value;
+			var lineItems = parent.custpage_line_items.value;
+			var billingFrequency = parent.custpage_line_billingfrequency.value;
+			var agreementItemTypes = parent.custpage_line_agreementtypes.value;
+			var priceLevels = parent.custpage_line_pricelevels.value;
+			var priceTypes = parent.custpage_line_pricetypes.value;
+			var usageGroups = parent.custpage_line_usagegroups.value;
+			$("#dd_subsidiary").html(subsidiaries);
+			$("#dd_customers").html(customers);
+			$("#dd_currencies").html(currencies);
+			$("#dd_agreement_status_list").html(statusList);
+			$("#dd_contract_terms").html(contractTerms);
+			$("#dd_payment_methods").html(paymentMethods);
+			$("#dd_line_items").html(lineItems);
+			$("#dd_line_billingFreq").html(billingFrequency);
+			$("#dd_line_status").html(statusList);
+			$("#dd_line_agreement_type").html(agreementItemTypes);
+			$("#dd_line_pricelevel").html(priceLevels);
+			$("#dd_line_pricingtype").html(priceTypes);
+			$("#dd_line_usagegroup").html(usageGroups);
+			$("#dd_line_pricelevel, #dd_customers").select2({
+				width: 'resolve',
+				dropdownParent: $("#newAgreementLineModal")
+			});
+		}
+		function setFieldValue(id, val, isVal) {
+			if (val) {
+				if (isVal) {
+					$(id).val(val);
+				}
+				else {
+					$(id).find("option:contains(" + val + ")").attr('selected', 'selected');
+				}
+			}
+		}
+		function disableAllControls(elem) {
+			$(elem).find("input").attr("disabled", "disbaled");
+			$(elem).find("input[type=checkbox]").attr("disabled", "disbaled");
+			$(elem).find("input[type=date]").attr("disabled", "disbaled");
+			$(elem).find("select").attr("disabled", "disbaled");
+		}
+		function resizeIframe() {
+			var iframe = parent.document.getElementById("agreement");
+			if(isEmpty(agreementLines)){
+				$(iframe).css("min-height", parent.document.body.clientHeight + "px");
+			}
+			else{
+				iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+			}
+		}
+		function populateAgreementLines(lines) {
+			debugger;
+			if (lines && lines.length > 0) {
+				var rowHtml = "";
+				var sId;
+				for (var l = 0; l < lines.length; l++) {
+					var existingRow = null;
+					if(!isEmpty(lines[l].id)){
+						existingRow = $("#tbl_agreement_detail_lies").find('tr[data-id="'+lines[l].id+'"]');
+					}
+					else{
+						existingRow = $("#tbl_agreement_detail_lies").find('tr[data-sid="'+lines[l].sId+'"]');
+					}
+					rowHtml = '<td>\
+								<a class="new agreement_line_view" title="View" data-toggle="tooltip"><i class="material-icons">remove_red_eye</i></a>\
+								<a class="edit agreement_line_edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>\
+							</td>\
+							<td>'+ lines[l].item + '</td>\
+							<td>'+ lines[l].quantity + '</td>\
+							<td>'+ lines[l].rate + '</td>\
+							<td>'+ lines[l].billingFrequency + '</td>\
+							<td>'+ (isEmpty(lines[l].startDate) == true ? "" :  lines[l].startDate) + '</td>\
+							<td>'+ (isEmpty(lines[l].endDate) == true ? "" : lines[l].endDate) + '</td>\
+							<td>'+ (isEmpty(lines[l].nextBillingDate) == true ? "" : lines[l].nextBillingDate) + '</td>\
+							<td>'+ (isEmpty(lines[l].status) == true ? "" : lines[l].status) + '</td>';
+					if(existingRow && existingRow.length > 0){
+						$(existingRow).html(rowHtml);
+					}
+					else{
+						$('#tbl_agreement_detail_lies > tbody:last-child').append('<tr data-sid='+lines[l].sId+' data-id='+lines[l].id+'>' + rowHtml + '</tr>');
+					}
+				}
+			}
+		}
+		function populateTrsanctions(transactions) {
+			if (transactions && transactions.length > 0) {
+				var rowHtml = "";
+				for (var t = 0; t < transactions.length; t++) {
+					rowHtml = '<td>'+ transactions[t].date + '</td>\
+							<td>'+ transactions[t].type + '</td>\
+							<td>'+ transactions[t].documentNumber + '</td>\
+							<td>'+ transactions[t].amount + '</td>\
+							<td>'+ transactions[t].fxamount + '</td>\
+							<td>'+ transactions[t].currency + '</td>\
+							<td>'+ transactions[t].status + '</td>';
+					$('#tbl_agreement_transactions > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+				}
+			}
+		}
+		function populateConclusionEvents(events) {
+			if (events && events.length > 0) {
+				var rowHtml = "";
+				for (var e = 0; e < events.length; e++) {
+					rowHtml = '<td>'+ events[e].agreementLineId + '</td>\
+							<td>'+ events[e].event + '</td>\
+							<td>'+ events[e].effectiveDate + '</td>\
+							<td>'+ events[e].reason + '</td>\
+							<td>'+ events[e].renewedAgreement + '</td>';
+					$('#tbl_agreement_conclusion_events > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+				}
+			}
+		}
+		function checkRequiredFields(formId) {
+			isValid = true;
+			$(formId).find(".required").each(function () {
+				var tagName = $(this).prop("tagName");
+				if (tagName == "INPUT" || tagName == "SELECT") {
+					if ($(this).val() == "" || $(this).val() == null || $(this).val() == "undefined") {
+						isValid = false;
+					}
+				}
+			});
+			return isValid;
+		}
+		function validateLineDate(){
+			var result = {
+				isValid : true,
+				message : ""
+			}
+			var startDate = moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value);
+			var endDate = moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value);
+			var nextBillingDate = moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value);
+			var lastBillingDate = moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value);
+			var nextRenewalDate = moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value);
+			if(startDate && endDate){
+				if(moment(startDate).isAfter(endDate)){
+					result = {
+						isValid : false,
+						message : "Start date should be before the end date."
+					}
+					return result;
+				}
+			}
+			if(nextRenewalDate && endDate){
+				if(moment(nextRenewalDate).isBefore(endDate)){
+					result = {
+						isValid : false,
+						message : "Next Renewal date should be after the end date."
+					}
+					return result;
+				}
+			}
+			if(nextBillingDate && startDate){
+				if(moment(nextBillingDate).isBefore(startDate)){
+					result = {
+						isValid : false,
+						message : "Next billing date should be after the start date."
+					}
+					return result;
+				}
+			}
+			return result;
+		}
+		function resetFields(elemId) {
+			$(elemId).find("input").each(function () {
+				$(this).val("");
+			});
+			$(elemId).find("select").each(function () {
+				$($(this).find("option:selected")).removeAttr("selected");
+			});
+		}
+		function getClinetConfig() {
+			var rConfig = JSON.parse('{}');
+			rConfig['context'] = csScriptUrl;
+			return entryPointRequire = parent.require.config(rConfig);
+		}
+		function togglePageLoader(isShow) {
+			var pageloader = parent.cust_pageLoader;
+			if (isShow) {
+				pageloader.style.backgroundImage = "url(" + pageLoaderURL + ")";
+				pageloader.style.display = "block";
+			} else {
+				pageloader.style.display = "none";
+			}
+		}
+		function isEmpty(value) {
+            if (value == "Invalid date" || value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
+            return false;
+        }
+		function toggleAlert(elem, content){
+			var alrtHtml = '<div class="ps_alert alert alert-danger fade in out" style="margin: 0 auto; width: 94%; margin-bottom: 10px;">\
+								<a href="#" class="close alert_content_close" data-dismiss="alert" aria-label="close" style="color: white;font-size: 15px;">&times;</a>\
+								<span >'+content+'</span>\
+							</div>';
+			$(elem).prepend(alrtHtml);
+			$(".alert").delay(2500).fadeOut("slow", function () { $(this).remove(); });
+			return false;
+		}
+		function setDropDownValueByText(elem, valueText){
+			$(elem).find("option").each(function() {
+				$(this).removeAttr('selected', 'selected');   
+				if($(this).text() == valueText) {
+					$(elem).val($(this).val());            
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

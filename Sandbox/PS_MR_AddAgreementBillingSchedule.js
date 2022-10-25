@@ -110,7 +110,9 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js'], function (log, sear
                 [
                     ["formulanumeric: CASE WHEN ABS(TO_DATE({custrecord_ps_aad_next_billing_date})-TO_DATE({today})) = " + days + " THEN 1 ELSE 0 END", "equalto", "1"],
                     "AND",
-                    ["custrecord_ps_aad_agreement.custrecord_ps_a_subsidiary", "anyof", subsidiary]
+                    ["custrecord_ps_aad_agreement.custrecord_ps_a_subsidiary", "anyof", subsidiary],
+                    "AND", 
+                    ["custrecord_ps_aad_status","noneof","@NONE@","3","5","4","6"]
                 ],
             columns:
                 [

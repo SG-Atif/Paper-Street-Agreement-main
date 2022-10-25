@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Agreement API Documentation</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>    
+        <style>
+            body{
+                background-color: rgb(247, 247, 247);
+            }
+            .heading{
+                font-weight: bold;
+                text-decoration: underline;
+            }
+            .main_heading{
+                text-align: center;
+            }
+        </style>
+    </head>
+<body>
+      <div class="container" style="width: 97%;font-family: Helvetica Neue">
+            <div class="row justify-content-center">
+                <h2 class="heading main_heading">Agreement API</h2>
+            </div>
+            <div class="api_end_points">
+                <div class="row get_agreements col-md-12">
+                    <h3 class="heading">Authentication:</h3>
+                    <p>
+                        The API request requires OAuth 1.0 authentication. Users have to generate the token key, token secret, consumer key, and consumer secret in the Netsuite account first.
+                    </p>
+                </div>
+                <div class="row get_agreements col-md-12">
+                    <h3 class="heading">Get Agreement:</h3>
+                    <p>
+                        The API endpoint is a GET request used to fetch the agreement details. The response JSON contains agreement fields values as well as the agreement lines, conclusion events, and transactions associated with the agreements. The parameters are optional but the user can add these to filter the data.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <table class="table" style="border: none;">
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>String</td>
+                                    <td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>customer</td>
+                                    <td>String</td>
+                                    <td>No</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    {
+        "isValid": true,
+        "message": null,
+        "data": [
+            {
+                "id": "602",
+                "customer": "Test Customer",
+                "subsidiary": "Parent Company : Test",
+                "currency": "US Dollar",
+                "startDate": "12/1/2021",
+                "endDate": "12/1/2022",
+                "term": "12 Month",
+                "paymentMethod": "Discover",
+                "requiredMinimum": "",
+                "createdDate": "12/01/2021 8:05 pm",
+                "isEvergreen": false,
+                "status": "Active",
+                "lines": [
+                    {
+                        "id": "304",
+                        "item": "Test Item",
+                        "quantity": "500",
+                        "amount": "3000",
+                        "startDate": "12/1/2021",
+                        "endDate": "12/1/2022",
+                        "nextBillingDate": "12/1/2021",
+                        "renewalDate": "12/2/2022",
+                        "lastBillingDate": "",
+                        "status": "Active",
+                        "agreementType": "",
+                        "priceLevel": "Core Services",
+                        "agreementPricingType": "",
+                        "createdFromTransactionId": " ",
+                        "transactionLineUniqueKey": "",
+                        "rate": "6"
+                    }
+                ],
+                "conclusionEvents": [
+                    {
+                        "id":"7",
+                        "agreement": "602"
+                        "agreementLineId":"302",
+                        "event":"Cancelled",
+                        "effectiveDate":"08/01/2022",
+                        "reason":"Not Using Product",
+                        "renewedAgreement": ""
+                    }
+                ],
+                "transactions": [
+                    {
+                        "id": "42724",
+                        "type": "Sales Order",
+                        "documentNumber": "661",
+                        "date": "4/2/2022"
+                    }
+                ]
+            }
+        ]
+    }
+                        </pre>
+                    </div>
+                </div>
+                <div class="row create_agreements col-md-12">
+                    <h3 class="heading">Create Agreement:</h3>
+                    <p>
+                        The API endpoint is a POST request used to create a new agreement. The response JSON is consist of message and data. If a new agreement is successfully created then the data property in the response will have the id of the new agreement.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <pre>
+    {
+        "method": "CreateAgreement",
+        "data": [
+            {
+                "customer": "Test Customer",
+                "subsidiary": "Parent Company: Test",
+                "term": "24 Months",
+                "paymentMethod": "Discover",
+                "currency": "US Dollar",
+                "requiredMinimum": "",
+                "startDate": "12/1/2022",
+                "endDate": "12/1/2024"
+            }
+        ]
+    }
+                        </pre>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    {
+        success: [
+            {
+                isValid : true,
+                message: "Agreement successfully created.",
+                data: "905"
+            }
+        ],
+        fail: []
+    }
+                        </pre>
+                    </div>
+                </div>
+                <div class="row update_agreements col-md-12">
+                    <h3 class="heading">Update Agreement:</h3>
+                    <p>
+                        The API endpoint is a PUT request used to update agreement. The response JSON is consist of message and data. If the agreement is successfully updated then the data property in the response will have the id of the updated agreement.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <pre>
+    {
+        "method": "UpdateAgreement",
+        "data": [
+            {
+                "id": "905",
+                "customer": "Test Customer",
+                "subsidiary": "Parent Company: Test",
+                "term": "36 Months",
+                "paymentMethod": "Discover",
+                "currency": "US Dollar",
+                "requiredMinimum": "",
+                "startDate": "12/1/2022",
+                "endDate": "12/1/2025"
+            }
+        ]
+    }
+                        </pre>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    {
+        success: [
+            {
+                isValid : true,
+                message: "Agreement updated successfully.",
+                data: "905"
+            }
+        ],
+        fail: []
+    }
+                        </pre>
+                    </div>
+                </div>
+                <div class="row create_agreement_lines col-md-12">
+                    <h3 class="heading">Create Agreement Lines:</h3>
+                    <p>
+                        The API endpoint is a POST request used to create new agreement lines. The response JSON is consist of a fail and success array. The fail and success array in the response indicates the successfully created lines and the lines that have errors or missing required data.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <pre>
+    {
+        "method": "CreateAgreementLines",
+        "data": [
+            {
+                "agreement": "905",
+                "item": "Test Item",
+                "quantity": "1",
+                "rate": "12",
+                "priceLevel": "",
+                "billingFrequency": "Annually",
+                "createdFromTransactionId": "91265",
+                "transactionLineUniqueKey": "1548796",
+                "agreementPricingType": "",
+                "agreementLineType": "Subscription",
+                "requiredMinimum": "",
+                "isClosed": false,
+                "startDate": "12/1/2022",
+                "endDate":"12/1/2024",
+                "nextBillingDate": "12/1/2023"
+            }
+        ]
+    }
+                        </pre>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    [
+        success: [
+            {
+                isValid : true,
+                message: "Agreement line successfully created.",
+                data: "1102"
+            }
+        ],
+        fail: []
+    ]
+                        </pre>
+                    </div>
+                </div>
+                <div class="row update_agreement_lines col-md-12">
+                    <h3 class="heading">Update Agreement Lines:</h3>
+                    <p>
+                        The API endpoint is a PUT request used to update existing agreement lines. The response JSON is consist of a fail and success array. The fail and success array in the response indicates the successfully updated lines and the lines that have errors or missing required data.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <pre>
+    {
+        "method": "UpdateAgreementLines",
+        "data": [
+            {
+                "id": "1102",
+                "agreement": "905",
+                "item": "Test Item",
+                "quantity": "2",
+                "rate": "12.5",
+                "priceLevel": "",
+                "billingFrequency": "Annually",
+                "createdFromTransactionId": "91265",
+                "transactionLineUniqueKey": "1548796",
+                "agreementPricingType": "",
+                "agreementLineType": "Subscription",
+                "requiredMinimum": "",
+                "isClosed": false,
+                "startDate": "12/1/2022",
+                "endDate":"12/1/2024",
+                "nextBillingDate": "12/1/2023"
+            }
+        ]
+    }
+                        </pre>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    [
+        success: [
+            {
+                isValid : true,
+                message: "Agreement line updated successfully.",
+                data: "1102"
+            }
+        ],
+        fail: []
+    ]
+                        </pre>
+                    </div>
+                </div>
+                <div class="row create_agreement_conclusion col-md-12">
+                    <h3 class="heading">Create Agreement Conclusion Event:</h3>
+                    <p>
+                        The API endpoint is a POST request used to create new agreement conclusion. This endpoint is used to create conclusion events for agreement and lines cancellation, agreement renewed and agreement merge. The response JSON contain data property for the newly created conclusion event id.
+                    </p>
+                    <div class="row col-md-5">
+                        <h4 class="heading">Parameter:</h4>
+                        <pre>
+    {
+        "method": "CreateAgreementConclusion",
+        "data": [
+            {
+                "agreement": "905"
+                "agreementLineId": "1102",
+                "effectiveDate": "12/05/2022",
+                "event": "Cancelled",
+                "renewedAgreement": "",
+                "reason": "Not Using Product"
+            },
+            {
+                "agreement": "805"
+                "agreementLineId": "",
+                "effectiveDate": "12/01/2022",
+                "event": "Renewed",
+                "renewedAgreement": "905",
+                "reason": ""
+            }
+
+        ]
+    }
+                        </pre>
+                    </div>
+                    <div class="row col-md-1"></div>
+                    <div class="row col-md-6">
+                        <h4 class="heading">Response:</h4>
+                        <pre>
+    [
+        success: [
+            {
+                isValid : true,
+                message: "Agreement conclusion successfully created.",
+                data: "505"
+            },
+            {
+                isValid : true,
+                message: "Agreement conclusion successfully created.",
+                data: "506"
+            },
+
+        ],
+        fail: []
+    ]
+                        </pre>
+                    </div>
+                </div>
+            </div>
+      </div>
+</body>
+</html>

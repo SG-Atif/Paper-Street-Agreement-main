@@ -192,7 +192,6 @@ function (log, search, record, moment, format, runtime) {
                search.createColumn({name: "item", sort: search.Sort.ASC, label: "Item" }),
                search.createColumn({name: "quantity", label: "Quantity"}),
                search.createColumn({name: "fxrate", label: "Item Rate"}),
-               search.createColumn({name: "pricelevel", label: "Price Level"}),
                search.createColumn({name: "fxamount", label: "Amount"}),
                search.createColumn({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                search.createColumn({name: "custbody_ps_agreement", label: "Agreement"}),
@@ -205,17 +204,18 @@ function (log, search, record, moment, format, runtime) {
                search.createColumn({name: "custcol_ps_required_minimum", label: "Required Minimum"}),
                search.createColumn({name: "custcol_ps_agreement_type", label: "Agreement Type"}),
                search.createColumn({name: "custcol_ps_billing_frequency", label: "Line Billing Frequency"}),
+               search.createColumn({name: "closed", label: "Closed"}),
             ]
          });
          transactionLineSearch.run().each(function(line){
              var lineItem = line.getValue({name: "item", sort: search.Sort.ASC, label: "Item" });
+             log.debug({title: "is line closed", details : line.getValue({name: "closed", label: "Closed"}) });
              if(lineItem){
                 lineData.push({
                     lineKey : line.getValue({name: "lineuniquekey", label: "Line Unique Key"}),
                     item : line.getValue({name: "item", sort: search.Sort.ASC, label: "Item" }),
                     qty : line.getValue({name: "quantity", label: "Quantity"}),
                     rate : line.getValue({name: "fxrate", label: "Item Rate"}),
-                    priceLevel : line.getValue({name: "pricelevel", label: "Price Level"}),
                     amount : line.getValue({name: "fxamount", label: "Amount"}),
                     billingFreq: line.getValue({ name: "custcol_ps_billing_frequency", label: "Line Billing Frequency" })
                         ? line.getValue({ name: "custcol_ps_billing_frequency", label: "Line Billing Frequency" })
@@ -230,6 +230,7 @@ function (log, search, record, moment, format, runtime) {
                     endTermAction : line.getValue({name: "custcol_ps_agreement_term_end_action", label: "Term End Action"}),
                     requiredMinimum : line.getValue({name: "custcol_ps_required_minimum", label: "Required Minimum"}),
                     agreementType : line.getValue({name: "custcol_ps_agreement_type", label: "Agreement Type"}),
+                    isClosed : line.getValue({name: "closed", label: "Closed"})
                 });
              }
             return true;
@@ -273,7 +274,7 @@ function (log, search, record, moment, format, runtime) {
     function generateAgreementDetails(tranData, agreementId, dateFormat){
         var currentDate = moment();
         if(tranData.lines && tranData.lines.length > 0){
-            log.debug({title : "Total Lines", details : tranData.lines.length});
+            log.debug({title : "Lines", details : JSON.stringify(tranData.lines)});
             for(var i = 0; i < tranData.lines.length; i++){
                 try{
                     var newAgreementDetailRec = record.create({
@@ -306,7 +307,10 @@ function (log, search, record, moment, format, runtime) {
                         var nextRenewalDate = moment(tranData.lines[i].endDate).add(1, 'days').format(dateFormat)
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_next_renewal_date', value: format.parse({value: nextRenewalDate, type: format.Type.DATE}) });   
                     }
-                    if(moment(tranData.lines[i].startDate).isSameOrBefore(currentDate)){
+                    if(tranData.lines[i].isClosed == true){
+                        newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_status', value: '3'});
+                    }
+                    else if(moment(tranData.lines[i].startDate).isSameOrBefore(currentDate)){
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_status', value: '2'});
                     }
                     else{
@@ -349,6 +353,10 @@ function (log, search, record, moment, format, runtime) {
             });
             log.debug({title : "New Renewal Conclusion Rec Id", details : newId});
         }
+    }
+    function isEmpty(value) {
+        if (value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
+        return false;
     }
 
     return {

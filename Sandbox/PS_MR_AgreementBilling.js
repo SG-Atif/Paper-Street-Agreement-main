@@ -7,34 +7,63 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
     function (log, search, record, moment, format, runtime) {
         function getInputData() {
             var agreementList = [];
-            var agreementSrch = search.create({
-                type: "customrecord_ps_agreement_details",
+            var preferencesSearch = search.create({
+                type: "customrecord_ps_agreement_preferences",
                 filters:
                     [
-                        ["custrecord_ps_aad_next_billing_date","on","today"], 
-                        //["custrecord_ps_aad_agreement", "anyof", "6805"],
-                        "AND",
-                        ["custrecord_ps_aad_status", "anyof", "3", "2"],//Active & Cancelled
-                        "AND",
-                        ["formulanumeric: CASE WHEN {custrecord_ps_aad_next_billing_date} = {custrecord_ps_aad_last_billing_date} THEN 1 ELSE 0 END", "equalto", "0"]
+                        ["isinactive", "is", "F"]
                     ],
                 columns:
                     [
-                        search.createColumn({
+                        search.createColumn({ name: "internalid", label: "Internal ID" }),
+                        search.createColumn({ name: "custrecord_ps_ap_subsidiary", label: "Subsidiary" }),
+                        search.createColumn({ name: "custrecord_ps_ap_use_cancel_tran", label: "Use Cancellation Transaction" }),
+                        search.createColumn({ name: "custrecord_ps_ap_agreement_tran_status", label: "Agreement Transaction Status" }),
+                        search.createColumn({ name: "custrecord_ps_ap_invoice_creation_days_a", label: "Invoice Creation Days In Advance" })
+                    ]
+            });
+            preferencesSearch.run().each(function (currentPref) {
+                var subsidiary = currentPref.getValue({ name: "custrecord_ps_ap_subsidiary", label: "Subsidiary" });
+                var billingAdvanceDays = currentPref.getValue({ name: "custrecord_ps_ap_invoice_creation_days_a", label: "Invoice Creation Days In Advance" });
+                if (isEmpty(billingAdvanceDays)) {
+                    billingAdvanceDays = 0;
+                }
+                //log.debug({title: "Subsidiary | Advance Billing Days", details: subsidiary +" | "+ billingAdvanceDays});
+                var agreementSrch = search.create({
+                    type: "customrecord_ps_agreement_details",
+                    filters:
+                        [
+                            //["custrecord_ps_aad_agreement", "anyof", "201"],
+                            ["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingAdvanceDays+" THEN 1 ELSE 0 END","equalto","1"],
+                            "AND",
+                            ["custrecord_ps_aad_agreement.custrecord_ps_a_subsidiary", "anyof", subsidiary],
+                            "AND",
+                            ["custrecord_ps_aad_status", "anyof", "3", "2"],//Active & Cancelled
+                            "AND",
+                            ["formulanumeric: CASE WHEN {custrecord_ps_aad_next_billing_date} = {custrecord_ps_aad_last_billing_date} THEN 1 ELSE 0 END", "equalto", "0"]
+                        ],
+                    columns:
+                        [
+                            search.createColumn({
+                                name: "custrecord_ps_aad_agreement",
+                                summary: "GROUP",
+                                sort: search.Sort.ASC,
+                                label: "Agreement"
+                            })
+                        ]
+                });
+                agreementSrch.run().each(function (result) {
+                    agreementList.push({
+                        agreementId: result.getValue({
                             name: "custrecord_ps_aad_agreement",
                             summary: "GROUP",
                             sort: search.Sort.ASC,
                             label: "Agreement"
-                        })
-                    ]
-            });
-            agreementSrch.run().each(function (result) {
-                agreementList.push(result.getValue({
-                    name: "custrecord_ps_aad_agreement",
-                    summary: "GROUP",
-                    sort: search.Sort.ASC,
-                    label: "Agreement"
-                }));
+                        }),
+                        advanceBillingDays: billingAdvanceDays
+                    });
+                    return true;
+                });
                 return true;
             });
             return agreementList;
@@ -43,25 +72,30 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
         function map(context) {
             try {
                 if (context.value) {
-                    var agreementId = JSON.parse(context.value);
-                    if (agreementId) {
-                        log.debug({ title: "Agreement Id", details: agreementId });
-                        // Load agreement record
-                        var agreementRec = record.load({
-                            type: 'customrecord_ps_agreement',
-                            id: agreementId
-                        });
-                        var subsidiary = agreementRec.getValue("custrecord_ps_a_subsidiary");
-                        var isBillingFromSOEnable = false;
-                        if (subsidiary) {
-                            isBillingFromSOEnable = isBillingFromSalesOrderEnable(subsidiary);
-                        }
-                        log.debug({ title: "Is Billing From Sales Order Enable", details: isBillingFromSOEnable });
-                        if (isBillingFromSOEnable == false) {
-                            createStandaloneInvoice(context, agreementId, agreementRec, subsidiary);
-                        }
-                        else {
-                            createInvoiceFromSalesOrder(context, agreementId, agreementRec, subsidiary);
+                    log.debug({ title: "Map Data", details: context.value });
+                    var srchResult = JSON.parse(context.value);
+                    if (srchResult) {
+                        var agreementId = srchResult.agreementId;
+                        var billingDays = srchResult.advanceBillingDays;
+                        if (agreementId) {
+                            log.debug({ title: "Agreement Id", details: agreementId });
+                            // Load agreement record
+                            var agreementRec = record.load({
+                                type: 'customrecord_ps_agreement',
+                                id: agreementId
+                            });
+                            var subsidiary = agreementRec.getValue("custrecord_ps_a_subsidiary");
+                            var isBillingFromSOEnable = false;
+                            if (subsidiary) {
+                                isBillingFromSOEnable = isBillingFromSalesOrderEnable(subsidiary);
+                            }
+                            log.debug({ title: "Is Billing From Sales Order Enable", details: isBillingFromSOEnable });
+                            if (isBillingFromSOEnable == false) {
+                                createStandaloneInvoice(context, agreementId, agreementRec, subsidiary, billingDays);
+                            }
+                            else {
+                                createInvoiceFromSalesOrder(context, agreementId, agreementRec, subsidiary, billingDays);
+                            }
                         }
                     }
                 }
@@ -73,13 +107,13 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
 
         function reduce(context) {
             try {
-                log.debug({ title: "Reduce | Agreement Detail Id", details: context.values });
+                log.debug({ title: "Reduce | Context", details: context });
                 if (context.values) {
                     var currentUserObj = runtime.getCurrentUser();
                     var dateFormat = currentUserObj.getPreference({
                         name: 'dateformat'
                     });
-                    setNextBillingDate(context.values[0], dateFormat);
+                    setNextBillingDate(context.key, dateFormat, context.values[0]);
                 }
             }
             catch (error) {
@@ -90,8 +124,8 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
         /**********************
          * Helper Functions****
         **********************/
-        function createInvoiceFromSalesOrder(context, agreementId, agreementRec, subsidiary) {
-            var agreementDetailList = getAgreementDetailLines(agreementId);
+        function createInvoiceFromSalesOrder(context, agreementId, agreementRec, subsidiary, billingDays) {
+            var agreementDetailList = getAgreementDetailLines(agreementId, billingDays);
             if (agreementDetailList && agreementDetailList.length > 0) {
                 log.debug({ title: "Agreement Detail Data", details: agreementDetailList });
                 var createdFromList = agreementDetailList.map(function (x) { return x.createdFrom });
@@ -110,149 +144,247 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                             agreementContractQty = contractResult.custrecord_ps_ct_quantity;
                             agreementContractTime = contractResult["custrecord_ps_ct_time.custrecord_ps_t_script_name"];
                         }
-                    }                   
+                    }
+
                     for (var c = 0; c < createdFromList.length; c++) {
-                        var salesOrderRec = record.load({
-                            type: "salesorder",
-                            id: createdFromList[c],
-                            isDynamic: true,
-                        });
-                        var newInvoice = record.transform({
-                            fromType: "salesorder",
-                            fromId: createdFromList[c],
-                            toType: "invoice",
-                            isDynamic: true,
-                        });
-                        if (newInvoice) {
-                            var currentSOAgreementLines = agreementDetailList.filter(function (a) { return a.createdFrom == createdFromList[c] && a.agreementType != null && a.agreementType != ""});
-                            if (currentSOAgreementLines && currentSOAgreementLines.length > 0) {
-                                var invLineCount = newInvoice.getLineCount("item");
-                                if (invLineCount > 0) {
-                                    var currentLineItem, currentLineKey, currentLineQty, currentLineRate, currentAgreementLineArray;
-                                    for (var line = (invLineCount - 1); line >= 0; line--) {
-                                        currentLineItem = newInvoice.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'item',
-                                            line: line,
-                                        });
-                                        currentLineKey = newInvoice.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'lineuniquekey',
-                                            line: line,
-                                        });
-                                        currentLineBillingFreq = newInvoice.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'custcol_ps_billing_frequency',
-                                            line: line,
-                                        });
-                                        currentLineQty = salesOrderRec.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'quantity',
-                                            line: line,
-                                        });
-                                        currentLineRate = salesOrderRec.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'rate',
-                                            line: line,
-                                        });
-                                        currentLineAmount = salesOrderRec.getSublistValue({
-                                            sublistId: 'item',
-                                            fieldId: 'amount',
-                                            line: line,
-                                        });
-                                        log.debug({ title: "Line Item | Key | Qty | Rate | currentLineBillingFreq", details: currentLineItem + " | " + currentLineKey + " | " + currentLineQty + " | " + currentLineRate+" | "+currentLineBillingFreq});
-                                        var totalBillingQty = 0;
-                                        currentAgreementLineArray = currentSOAgreementLines.filter(function (a) { return a.item == currentLineItem && a.billingFreq == currentLineBillingFreq });
-                                        log.debug({ title: "Current Line Array", details: JSON.stringify(currentAgreementLineArray) });
-                                        if (currentAgreementLineArray && currentAgreementLineArray.length > 0) {
-                                            var billingFreqTime = getBillingFreqTimeScriptId(currentAgreementLineArray[0].billingFreqTime);
-                                            log.debug({ title: "billingFreqTime |  agreementContractTime", details: billingFreqTime + " | " + agreementContractTime });
-                                            if (billingFreqTime == agreementContractTime) {
-                                                var billingFreTotalQty = currentAgreementLineArray[0].billingFreqQty;
-                                                log.debug({ title: "Billing Freq Total Qty | Contract Term Total Qty", details: billingFreTotalQty + " | " + agreementContractQty });
-                                                if (billingFreTotalQty > 0) {
-                                                    totalBillingQty = agreementContractQty / billingFreTotalQty;
+                        try {
+                            log.debug({ title: "Transaction Id", details: createdFromList[c] });
+                            var salesOrderRec = record.load({
+                                type: "salesorder",
+                                id: createdFromList[c],
+                                isDynamic: true,
+                            });
+                            var newInvoice = record.transform({
+                                fromType: "salesorder",
+                                fromId: createdFromList[c],
+                                toType: "invoice",
+                                isDynamic: true,
+                            });
+                            if (newInvoice) {
+                                var currentSOAgreementLines = agreementDetailList.filter(function (a) { return a.createdFrom == createdFromList[c] && a.agreementType != null && a.agreementType != "" });
+                                if (currentSOAgreementLines && currentSOAgreementLines.length > 0) {
+                                    var invLineCount = newInvoice.getLineCount("item");
+                                    if (invLineCount > 0) {
+                                        var currentLineItem, currentLineKey, currentLineQty, currentBilledQty, currentLineRate, currentAgreementLineArray, soLineIndex, termInMonth;
+                                        for (var line = (invLineCount - 1); line >= 0; line--) {
+                                            currentLineItem = newInvoice.getSublistValue({
+                                                sublistId: 'item',
+                                                fieldId: 'item',
+                                                line: line,
+                                            });
+                                            currentLineKey = newInvoice.getSublistValue({
+                                                sublistId: 'item',
+                                                fieldId: 'lineuniquekey',
+                                                line: line,
+                                            });
+                                            currentLineBillingFreq = newInvoice.getSublistValue({
+                                                sublistId: 'item',
+                                                fieldId: 'custcol_ps_billing_frequency',
+                                                line: line,
+                                            });
+                                            soLineIndex = salesOrderRec.findSublistLineWithValue({
+                                                sublistId: 'item',
+                                                fieldId: 'lineuniquekey',
+                                                value: currentLineKey
+                                            });
+                                            if (soLineIndex > -1) {
+                                                currentLineQty = parseFloat(salesOrderRec.getSublistValue({
+                                                    sublistId: 'item',
+                                                    fieldId: 'quantity',
+                                                    line: soLineIndex,
+                                                })||0);
+                                                currentBilledQty = salesOrderRec.getSublistValue({
+                                                    sublistId: 'item',
+                                                    fieldId: 'quantitybilled',
+                                                    line: soLineIndex,
+                                                });
+                                                currentLineRate = salesOrderRec.getSublistValue({
+                                                    sublistId: 'item',
+                                                    fieldId: 'rate',
+                                                    line: soLineIndex,
+                                                });
+                                                currentLineAmount = salesOrderRec.getSublistValue({
+                                                    sublistId: 'item',
+                                                    fieldId: 'amount',
+                                                    line: soLineIndex,
+                                                });
+                                                log.debug({
+                                                    title: "Line Item | Key | Qty | Rate | currentLineBillingFreq",
+                                                    details: currentLineItem + " | " + currentLineKey + " | " + currentLineQty
+                                                        + " | " + currentLineRate + " | " + currentLineBillingFreq
+                                                });
+                                                var totalBillingQty = 0;
+                                                var rateBillingQty = 0;
+                                                var isProRated = false;
+                                                var rateFreq = 0;
+                                                currentAgreementLineArray = currentSOAgreementLines.filter(function (a) { return a.item == currentLineItem && a.tranLineKey == currentLineKey });
+                                                log.debug({ title: "Current Line Array", details: JSON.stringify(currentAgreementLineArray) });
+                                                if (currentAgreementLineArray && currentAgreementLineArray.length > 0) {
+                                                    var billingFreqTime = null;
+                                                    if (currentAgreementLineArray[0].billingFreqText && currentAgreementLineArray[0].billingFreqText != "One-Time") {
+                                                        billingFreqTime = getBillingFreqTimeScriptId(currentAgreementLineArray[0].billingFreqTime);
+                                                        log.debug({ title: "billingFreqTime |  agreementContractTime", details: billingFreqTime + " | " + agreementContractTime });
+                                                    }
+                                                    if (currentAgreementLineArray[0].billingFreqText == "One-Time") {
+                                                        totalBillingQty = 1;
+                                                        isProRated = false;
+                                                        rateFreq = 1;
+                                                    }
+                                                    else if (currentAgreementLineArray[0].endDate && currentAgreementLineArray[0].startDate) {
+                                                        totalBillingQty = Math.round(moment(currentAgreementLineArray[0].endDate).diff(currentAgreementLineArray[0].startDate, billingFreqTime, true));
+                                                        if (currentAgreementLineArray[0].lastBillingDate && currentAgreementLineArray[0].nextBillingDate) {
+                                                            termInMonth = Math.round(moment(currentAgreementLineArray[0].nextBillingDate).diff(currentAgreementLineArray[0].lastBillingDate, "months", true));
+                                                        }
+                                                        else if(currentAgreementLineArray[0].nextBillingDate && currentAgreementLineArray[0].startDate){
+                                                            termInMonth = Math.round(moment(currentAgreementLineArray[0].nextBillingDate).diff(currentAgreementLineArray[0].startDate, "months", true));
+                                                        }
+                                                        rateBillingQty = getBillingFreqQtyInMonths(billingFreqTime, parseFloat(currentAgreementLineArray[0].billingFreqQty || 0));
+                                                        log.debug({ title: "Billing Rate Qty | Total Billing Qty | Term In Month", details: rateBillingQty + " | " + totalBillingQty + " | " + termInMonth });
+                                                        if (rateBillingQty != null && rateBillingQty != 0) {
+                                                            if (termInMonth) {
+                                                                rateFreq = parseFloat(termInMonth) / parseFloat(rateBillingQty);
+                                                                if (rateFreq < 1) {
+                                                                    isProRated = true;
+                                                                }
+                                                            }
+                                                        }
+                                                        log.debug({ title: "Total Billing Qty | Rate Billing Qty | Rate Freq", details: totalBillingQty + " | " + rateBillingQty + " | " + rateFreq });
+                                                    }
+                                                    else if (billingFreqTime == agreementContractTime) {
+                                                        var billingFreTotalQty = currentAgreementLineArray[0].billingFreqQty;
+                                                        log.debug({ title: "Billing Freq Total Qty | Contract Term Total Qty", details: billingFreTotalQty + " | " + agreementContractQty });
+                                                        if (billingFreTotalQty > 0) {
+                                                            totalBillingQty = agreementContractQty / billingFreTotalQty;
+                                                        }
+                                                    }
+                                                    else {
+                                                        var billingFreTotalQty = getQtyInContractTerms(agreementContractTime, billingFreqTime, currentAgreementLineArray[0].billingFreqQty);
+                                                        log.debug({ title: "Billing Freq Total Qty | Contract Term Total Qty", details: billingFreTotalQty + " | " + agreementContractQty });
+                                                        if (billingFreTotalQty > 0) {
+                                                            totalBillingQty = agreementContractQty / billingFreTotalQty;
+                                                        }
+                                                    }
+                                                    if (totalBillingQty && totalBillingQty != 0) {
+                                                        newInvoice.selectLine({
+                                                            sublistId: 'item',
+                                                            line: line
+                                                        });
+                                                        newInvoice.setCurrentSublistValue({
+                                                            sublistId: 'item',
+                                                            fieldId: 'item',
+                                                            value: currentLineItem
+                                                        });
+                                                        log.debug({
+                                                            title: "Current Line Qty | Calculated Qty", details: parseFloat(newInvoice.getCurrentSublistValue({
+                                                                sublistId: 'item',
+                                                                fieldId: 'quantity',
+                                                            })) + " | " + parseFloat(currentLineQty / totalBillingQty)
+                                                        })
+                                                        if (!moment(currentAgreementLineArray[0].nextBillingDate).isSame(currentAgreementLineArray[0].endDate)) {
+                                                            newInvoice.setCurrentSublistValue({
+                                                                sublistId: 'item',
+                                                                fieldId: 'quantity',
+                                                                value: parseFloat(currentLineQty / totalBillingQty)
+                                                            });
+                                                        }
+                                                        if (currentLineRate == 0) {
+                                                            if (rateFreq != 0 && isProRated == true) {
+                                                                newInvoice.setCurrentSublistValue({
+                                                                    sublistId: 'item',
+                                                                    fieldId: 'amount',
+                                                                    value: parseFloat(currentLineAmount * rateFreq)
+                                                                });
+                                                            }
+                                                            else {
+                                                                newInvoice.setCurrentSublistValue({
+                                                                    sublistId: 'item',
+                                                                    fieldId: 'amount',
+                                                                    value: parseFloat(currentLineAmount / totalBillingQty)
+                                                                });
+                                                            }
+                                                        }
+                                                        else if (currentLineAmount != 0) {
+                                                            if (rateFreq != 0 && isProRated == true) {
+                                                                newInvoice.setCurrentSublistValue({
+                                                                    sublistId: 'item',
+                                                                    fieldId: 'rate',
+                                                                    value: parseFloat(currentLineRate * rateFreq)
+                                                                });
+                                                            }
+                                                            else {
+                                                                newInvoice.setCurrentSublistValue({
+                                                                    sublistId: 'item',
+                                                                    fieldId: 'rate',
+                                                                    value: currentLineRate
+                                                                });
+                                                            }
+                                                        }
+                                                        newInvoice.commitLine({
+                                                            sublistId: 'item'
+                                                        });
+                                                        context.write({
+                                                            key: currentAgreementLineArray[0].id,
+                                                            value: currentAgreementLineArray[0].nextBillingDate,
+                                                        });
+                                                    }
+                                                    else {
+                                                        newInvoice.removeLine({
+                                                            sublistId: 'item',
+                                                            line: line,
+                                                            ignoreRecalc: false
+                                                        });
+                                                    }
+                                                }
+                                                else {
+                                                    newInvoice.removeLine({
+                                                        sublistId: 'item',
+                                                        line: line,
+                                                        ignoreRecalc: false
+                                                    });
                                                 }
                                             }
                                             else {
-                                                var billingFreTotalQty = getQtyInContractTerms(agreementContractTime, billingFreqTime, currentAgreementLineArray[0].billingFreqQty);
-                                                log.debug({ title: "Billing Freq Total Qty | Contract Term Total Qty", details: billingFreTotalQty + " | " + agreementContractQty });
-                                                if (billingFreTotalQty > 0) {
-                                                    totalBillingQty = agreementContractQty / billingFreTotalQty;
-                                                }
+                                                var newInvoiceId = newInvoice.removeLine({
+                                                    sublistId: 'item',
+                                                    line: line,
+                                                    ignoreRecalc: false
+                                                });
+                                                log.debug({ title: "New invoice id", details: newInvoiceId });
                                             }
-                                            if (totalBillingQty) {
-                                                newInvoice.selectLine({
-                                                    sublistId: 'item',
-                                                    line: line
-                                                });
-                                                newInvoice.setCurrentSublistValue({
-                                                    sublistId: 'item',
-                                                    fieldId: 'item',
-                                                    value: currentLineItem
-                                                });
-                                                newInvoice.setCurrentSublistValue({
-                                                    sublistId: 'item',
-                                                    fieldId: 'quantity',
-                                                    value: parseFloat(currentLineQty / totalBillingQty)
-                                                });
-                                                if (currentLineRate == 0) {
-                                                    newInvoice.setCurrentSublistValue({
-                                                        sublistId: 'item',
-                                                        fieldId: 'amount',
-                                                        value: parseFloat(currentLineAmount / totalBillingQty)
-                                                    });
-                                                }
-                                                else if (currentLineAmount != 0) {
-                                                    newInvoice.setCurrentSublistValue({
-                                                        sublistId: 'item',
-                                                        fieldId: 'rate',
-                                                        value: currentLineRate
-                                                    });
-                                                }
-                                                newInvoice.commitLine({
-                                                    sublistId: 'item'
-                                                });
-                                                context.write({
-                                                    key: currentAgreementLineArray[0].id,
-                                                    value: currentAgreementLineArray[0].id
-                                                });
-                                            }
-                                        }
-                                        else {
-                                            newInvoice.removeLine({
-                                                sublistId: 'item',
-                                                line: line,
-                                                ignoreRecalc: true
-                                            });
                                         }
                                     }
                                 }
+                                else {
+                                    log.debug({ title: "No agreement line found for SO", details: "SO Id - " + createdFromList[c] });
+                                }
+                            }
+                            var lineCountAgain = newInvoice.getLineCount("item");
+                            if (lineCountAgain > 0) {
+                                newInvoice.save({
+                                    enableSourcing: true,
+                                    ignoreMandatoryFields: true
+                                });
                             }
                             else {
-                                log.debug({ title: "No agreement line found for SO", details: "SO Id - " + createdFromList[c]});
+                                log.debug({ title: "No line item added to the invoice.", details: "No line item added to the invoice." });
                             }
                         }
-                        var lineCountAgain = newInvoice.getLineCount("item");
-                        if (lineCountAgain > 0) {
-                            newInvoice.save({
-                                enableSourcing: true,
-                                ignoreMandatoryFields: true
-                            });
-                        }
-                        else {
-                            log.debug({ title: "No line item added to the invoice.", details: "No line item added to the invoice." });
+                        catch (exp) {
+                            log.debug({ title: "Warning!", details: exp });
                         }
                     }
-            
                 }
                 else {
                     log.debug({ title: "No Sales Order Found.", details: "Agreement detail lines don't have any sales order reference." });
                 }
             }
         }
-        function createStandaloneInvoice(context, agreementId, agreementRec, subsidiary) {
-            var agreementDetailList = getAgreementDetailLines(agreementId);
+        function createStandaloneInvoice(context, agreementId, agreementRec, subsidiary, billingDays) {
+            var currentUserObj = runtime.getCurrentUser();
+            var dateFormat = currentUserObj.getPreference({
+                name: 'dateformat'
+            });
+            var agreementDetailList = getAgreementDetailLines(agreementId, billingDays);
             if (agreementDetailList && agreementDetailList.length > 0) {
                 log.debug({ title: "Agreement Detail Data", details: agreementDetailList });
                 var newInvoice = record.create({
@@ -290,6 +422,17 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                             sublistId: 'item',
                             fieldId: 'custcol_ps_required_minimum',
                             value: agreementDetailList[j].requiredMinimum,
+                        });
+                        //For PatientNow
+                        newInvoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_line_start_date',
+                            value: format.parse({ value: moment(agreementDetailList[j].startDate).format(dateFormat), type: format.Type.DATE }),
+                        });
+                        newInvoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_line_end_date',
+                            value: format.parse({ value: moment(agreementDetailList[j].endDate).format(dateFormat), type: format.Type.DATE }),
                         });
                         if (agreementDetailList[j].agreementType == "2") {//Usage line
                             newInvoice = addUsageLine(newInvoice, agreementDetailList[j]);
@@ -335,7 +478,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                         for (var c = 0; c < agreementDetailList.length; c++) {
                             context.write({
                                 key: agreementDetailList[c].id,
-                                value: agreementDetailList[c].id
+                                value: agreementDetailList[c].nextBillingDate,
                             });
                         }
                     }
@@ -345,14 +488,17 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                 log.debug({ title: "No agreement detail found." });
             }
         }
-        function getAgreementDetailLines(agreementId) {
+        function getAgreementDetailLines(agreementId, billingDays) {
             var agreementDetailList = [];
             var agreementDetailSrch = search.create({
                 type: "customrecord_ps_agreement_details",
                 filters:
                     [
-                        ["custrecord_ps_aad_next_billing_date","on","today"], 
-                        "AND", 
+                        //["custrecord_ps_aad_next_billing_date","on","10/1/2024"],
+                        ["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingDays+" THEN 1 ELSE 0 END","equalto","1"],
+                        //"AND", 
+                        //["internalid", "anyof", ["8814", "8815", "8816"]],
+                        "AND",
                         ["custrecord_ps_aad_status", "anyof", "2", "3"],
                         "AND",
                         ["custrecord_ps_aad_agreement", "anyof", agreementId]
@@ -400,6 +546,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     tranLineKey: result.getValue({ name: "custrecord_ps_aad_tran_line_key", label: "Transaction Line Key" }),
                     agreementType: result.getValue({ name: "custrecord_ps_aad_agreement_type", label: "Agreement Type" }),
                     billingFreq: result.getValue({ name: "custrecord_ps_aad_billing_frequency", label: "Billing Freq" }),
+                    billingFreqText: result.getText({ name: "custrecord_ps_aad_billing_frequency", label: "Billing Freq" }),
                     billingFreqQty: result.getValue({ name: "custrecord_ps_ct_quantity", join: "CUSTRECORD_PS_AAD_BILLING_FREQUENCY", label: "Quantity" }),
                     billingFreqTime: result.getValue({ name: "custrecord_ps_ct_time", join: "CUSTRECORD_PS_AAD_BILLING_FREQUENCY", label: "Time" }),
                 });
@@ -464,6 +611,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                         return invoice;
                     }
                 }
+                log.debug({title: "Line rate", details: currentRate});
                 if (currentRate) {
                     invoice.setCurrentSublistValue({
                         sublistId: 'item',
@@ -734,7 +882,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     a.push(arr[i]);
             return a;
         }
-        function setNextBillingDate(ids, dateFormat) {
+        function setNextBillingDate(ids, dateFormat, currentNextBillDate) {
             log.debug({ title: "id", details: ids });
             var agreementNextBillSrch = search.create({
                 type: "customrecord_ps_agreement_details",
@@ -760,7 +908,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     id: result.getValue({ name: "internalid", label: "Internal ID" }),
                     startDate: result.getValue({ name: "custrecord_ps_aad_start_date", label: "Start Date" }),
                     endDate: result.getValue({ name: "custrecord_ps_aad_end_date", label: "End Date" }),
-                    nextBillingDate: result.getValue({ name: "custrecord_ps_aad_next_billing_date", label: "Next Billing Date" }),
+                    nextBillingDate: currentNextBillDate ? currentNextBillDate : result.getValue({ name: "custrecord_ps_aad_next_billing_date", label: "Next Billing Date" }),
                     billingFreq: result.getValue({ name: "custrecord_ps_aad_billing_frequency", label: "Billing Frequency" }),
                     billingFreqQty: result.getValue({ name: "custrecord_ps_ct_quantity", join: "CUSTRECORD_PS_AAD_BILLING_FREQUENCY", label: "Quantity" }),
                     billingFreqTime: result.getValue({ name: "custrecord_ps_ct_time", join: "CUSTRECORD_PS_AAD_BILLING_FREQUENCY", label: "Time" }),
@@ -774,7 +922,6 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     log.debug({ title: "Data detail", details: data });
                     var newNextBillingDate = getNextBillingDate(data['startDate'], data['nextBillingDate'], data['billingFreqQty'],
                         data['billingFreqScriptid'], data['endDate'], dateFormat);
-                    log.debug({ title: "New Next Billing Date", details: newNextBillingDate });
                     if (newNextBillingDate) {
                         updateAgreementDetail(data['id'], newNextBillingDate, data.nextBillingDate, dateFormat);
                     }
@@ -794,6 +941,8 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
             return lookResults.custrecord_ps_t_script_name;
         }
         function getNextBillingDate(startDate, previousBillingDate, qty, timeId, endDate, dateFormat) {
+            log.debug({title: "getNextBillingDate -- startDate | previousBillingDate | qty | timeId, endDate", 
+                        details: startDate +" | "+ previousBillingDate+" | "+ qty+" | "+ timeId+" | "+ endDate})
             if (previousBillingDate) {
                 startDate = previousBillingDate;
             }
@@ -812,14 +961,16 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     nextBillingDate = endDate;
                 }
             }
+            //log.debug({title: "nextBillingDate", details: nextBillingDate});
             return nextBillingDate ? moment(nextBillingDate).format(dateFormat) : '';
         }
         function updateAgreementDetail(id, nextBillingDate, previousBillingDate, dateFormat) {
-            log.debug({ title: "Next Billing Date", details: "Last Billing Date" });
+            log.debug({ title: "Next Billing Date | Date Format", details: nextBillingDate+" | "+dateFormat });
             var currentDetailRec = record.load({
                 type: 'customrecord_ps_agreement_details',
                 id: id
             });
+            //log.debug({title: "Next Billing Date", details: nextBillingDate});
             currentDetailRec.setValue({
                 fieldId: 'custrecord_ps_aad_next_billing_date',
                 value: format.parse({ value: moment(nextBillingDate).format(dateFormat), type: format.Type.DATE }),
@@ -926,30 +1077,30 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
             switch (contractTime) {
                 case "years":
                     if (billingFreqTime == "months") {
-                        total = BillingFreqQty/12;
+                        total = BillingFreqQty / 12;
                     }
                     else if (billingFreqTime == "quarters") {
-                        total = BillingFreqQty/4;
+                        total = BillingFreqQty / 4;
                     }
                     else if (billingFreqTime == "weeks") {
-                        total = BillingFreqQty/52.1429;
+                        total = BillingFreqQty / 52.1429;
                     }
                     else if (billingFreqTime == "days") {
-                        total = BillingFreqQty/365;
+                        total = BillingFreqQty / 365;
                     }
                     break;
                 case "quarters":
                     if (billingFreqTime == "years") {
-                        total = BillingFreqQty*4;
+                        total = BillingFreqQty * 4;
                     }
                     else if (billingFreqTime == "months") {
-                        total = BillingFreqQty/3;
+                        total = BillingFreqQty / 3;
                     }
                     else if (billingFreqTime == "weeks") {
-                        total = BillingFreqQty/13;
+                        total = BillingFreqQty / 13;
                     }
                     else if (billingFreqTime == "days") {
-                        total = BillingFreqQty/90;
+                        total = BillingFreqQty / 90;
                     }
                     break;
                 case "months":
@@ -977,7 +1128,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                         total = BillingFreqQty / 4.34524;
                     }
                     else if (billingFreqTime == "days") {
-                        total = BillingFreqQty/7;
+                        total = BillingFreqQty / 7;
                     }
                     break;
                 case "days":
@@ -998,6 +1149,23 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     total = 0;
             }
             return total;
+        }
+        function getBillingFreqQtyInMonths(timeUnit, qty) {
+            if (timeUnit == "months") {
+                return qty;
+            }
+            else if (timeUnit == "years") {
+                return qty * 12;
+            }
+            else if (timeUnit == "quarters") {
+                return qty * 6;
+            }
+            else if (timeUnit == "quarters") {
+                return qty * 6;
+            }
+            else {
+                return null;
+            }
         }
         return {
             getInputData: getInputData,

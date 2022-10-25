@@ -26,22 +26,25 @@
                             var isAgreementLineExist = orderHasAnyAgreementItem(currentRecId);
                             if(isAgreementLineExist == false){
                                 requestForNewAgreement = false;
-                                currentTranRec.getValue("custbody_ps_create_new_agreement", false);
+                                currentTranRec.setValue({fieldId: "custbody_ps_create_new_agreement", value : false});
                             }
                         }
                     }
-                    if(agreementId && requestForNewAgreement == false){
-                        var agreementLookup = search.lookupFields({
-                            type: 'customrecord_ps_agreement',
-                            id: agreementId,
-                            columns: ['custrecord_ps_a_agreement_end_date']
-                        });
-                        var endDate = agreementLookup.custrecord_ps_a_agreement_end_date;
-                        var transactionLines = getTransactionLines(currentRecId, endDate);
-                        log.debug({ title: "Transaction Lines Data", details : JSON.stringify(transactionLines) });
-                        if(transactionLines && transactionLines.length > 0){
+                    if(agreementId){
+                        updateDatesInAgreement(currentRecId, currentRecType, agreementId);
+                        //if(requestForNewAgreement == false){
+                            var agreementLookup = search.lookupFields({
+                                type: 'customrecord_ps_agreement',
+                                id: agreementId,
+                                columns: ['custrecord_ps_a_agreement_end_date']
+                            });
+                            var endDate = agreementLookup.custrecord_ps_a_agreement_end_date;
+                            var transactionLines = getTransactionLines(currentRecId, endDate);
+                            log.debug({ title: "Transaction Lines Data", details : JSON.stringify(transactionLines) });
+                            if(transactionLines && transactionLines.length > 0){
                                 generateAgreementDetails(transactionLines, agreementId, currentRecId);
-                        }
+                            }
+                        //}
                     }
                 }
             }
@@ -78,7 +81,6 @@
                search.createColumn({name: "item", sort: search.Sort.ASC, label: "Item" }),
                search.createColumn({name: "quantity", label: "Quantity"}),
                search.createColumn({name: "fxrate", label: "Item Rate"}),
-               search.createColumn({name: "pricelevel", label: "Price Level"}),
                search.createColumn({name: "fxamount", label: "Amount"}),
                search.createColumn({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                search.createColumn({name: "custbody_ps_agreement", label: "Agreement"}),
@@ -99,7 +101,6 @@
                     item : line.getValue({name: "item", sort: search.Sort.ASC, label: "Item" }),
                     qty : line.getValue({name: "quantity", label: "Quantity"}),
                     rate : line.getValue({name: "fxrate", label: "Item Rate"}),
-                    priceLevel : line.getValue({name: "pricelevel", label: "Price Level"}),
                     amount : line.getValue({name: "fxamount", label: "Amount"}),
                     billingFreq : line.getValue({name: "custbody_ps_billing_frequency", label: "Billing Frequency"}),
                     agreement : line.getValue({name: "custbody_ps_agreement", label: "Agreement"}),
@@ -139,6 +140,7 @@
                 }
                 
                 if(newAgreementDetailRec){
+                    log.debug({title:"Trnasaction line detail", details : JSON.stringify(tranLineData)});
                     newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_agreement', value: agreementId });
                     newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_item', value: tranLineData[i].item });
                     newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_quantity', value: tranLineData[i].qty });
@@ -215,6 +217,56 @@
             response = true;
         });
         return response;
+    }
+    function isEmpty(value) {
+        if (value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
+        return false;
+    }
+    function updateDatesInAgreement(tranId, tranType, agrementId){
+        if(agrementId){
+            var srchfilters =   [
+                ["internalid","anyof", tranId],
+                "AND", 
+                ["mainline","is","F"], 
+                "AND", 
+                ["taxline","is","F"], 
+                "AND", 
+                ["shipping","is","F"], 
+                "AND", 
+                ["cogs","is","F"]
+            ];
+            var transactionSearch = search.create({
+                type: tranType,
+                filters: srchfilters,
+                columns:
+                [
+                    search.createColumn({ name: "internalid", summary: "GROUP", label: "Internal ID" }),
+                    search.createColumn({ name: "custcol_ps_agreement_start_date", summary: "MIN", label: "Agreement Start Date" }),
+                    search.createColumn({ name: "custcol_ps_agreement_end_date", summary: "MAX", label: "Agreement End Date" }),
+                ]
+            });
+            transactionSearch.run().each(function(result){
+                var startDate = result.getValue({ name: "custcol_ps_agreement_start_date", summary: "MIN", label: "Agreement Start Date" });
+                var endDate = result.getValue({ name: "custcol_ps_agreement_end_date", summary: "MAX", label: "Agreement End Date" });
+                if(startDate && endDate){
+                    log.debug({title: "Agreement | Start | End", details: agrementId +" | "+ startDate +" | "+ endDate});
+                    var agreementRec = record.load({
+                        type: 'customrecord_ps_agreement',
+                        id : agrementId,
+                        isDynamic: true,
+                    });
+                    if(agreementRec){
+                        agreementRec.setValue({ fieldId: "custrecord_ps_a_agreement_start", value: format.parse({value: startDate, type: format.Type.DATE})});
+                        agreementRec.setValue({ fieldId: "custrecord_ps_a_agreement_end_date", value: format.parse({value: endDate, type: format.Type.DATE})});
+                        agreementRec.save({
+                            enableSourcing: true, 
+                            ignoreMandatoryFields: true
+                        });
+                    }
+                }
+                return true;
+            });
+        }
     }
 
     return {

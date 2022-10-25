@@ -41,9 +41,10 @@
                     var priceType = currentAgreementDetailRec.getValue("custrecord_ps_aad_pricing_type");
                     var billingFreq = currentAgreementDetailRec.getValue("custrecord_ps_aad_billing_frequency");
                     var qty = currentAgreementDetailRec.getValue("custrecord_ps_aad_quantity");
-                    log.debug({ title: "Billing Freq | Qty", details: billingFreq +" | "+ qty });
+                    log.debug({ title: "Billing Freq | Qty | Price Level", details: billingFreq +" | "+ qty +" | "+ priceLevel});
                     if(billingFreq && qty && priceLevel){
                         var result = getRateAndAmount(priceLevel, billingFreq, qty, priceType);
+                        log.debug({ title: "rate and amount result", details: JSON.stringify(result)});
                         if(result){
                             if(result.rate && result.rate != 0){
                                 currentAgreementDetailRec.setValue({

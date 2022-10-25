@@ -177,25 +177,9 @@ function (error, log, search, moment, runtime) {
     function saveRecord(context){
         var currentRecord = context.currentRecord;
         var agreementId = currentRecord.getValue("custbody_ps_agreement");
-        var orderType = currentRecord.getValue("custbody_nsts_order_type"); //For Athenian
         if(agreementId){
             var tranContractTerm = currentRecord.getValue("custbody_ps_agreement_term");
-            if(tranContractTerm){
-                var agreementLookResults = search.lookupFields({
-                    type: 'customrecord_ps_agreement',
-                    id: agreementId,
-                    columns: ['custrecord_ps_a_contract_term']
-                });
-                if(agreementLookResults && agreementLookResults.custrecord_ps_a_contract_term 
-                    && agreementLookResults.custrecord_ps_a_contract_term.length > 0){
-                    if(agreementLookResults.custrecord_ps_a_contract_term[0].value != tranContractTerm 
-                        && orderType != "2"){ //For Athenian if order type is not upsell.
-                        alert("Contract term doesn't match with the selected agreement contract term.");
-                        return false;
-                    }
-                }
-            }
-            else{
+            if(!tranContractTerm){
                 alert("Please enter value for Contract Term.");
                 return false;
             }
