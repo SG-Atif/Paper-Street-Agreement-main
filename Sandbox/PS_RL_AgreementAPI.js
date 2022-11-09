@@ -515,14 +515,14 @@
                     if(objAgreementLine.quantity){
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_quantity', value: objAgreementLine.quantity });
                     }
-                    if(objAgreementLine.rate){
-                        newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_rate', value: objAgreementLine.rate });
-                    }
                     if(!isEmpty(objAgreementLine.priceLevelId)){
                         newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_price_level', value: objAgreementLine.priceLevelId});
                     }
-                    else if(objAgreementLine.priceLevel){
+                    else if(!isEmpty(objAgreementLine.priceLevel)){
                         newAgreementDetailRec.setText({ fieldId: 'custrecord_ps_aad_price_level', text: objAgreementLine.priceLevel});
+                    }
+                    else if(objAgreementLine.rate){
+                        newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_rate', value: objAgreementLine.rate });
                     }
                     if(objAgreementLine.billingFrequency){
                         newAgreementDetailRec.setText({ fieldId: 'custrecord_ps_aad_billing_frequency', text: objAgreementLine.billingFrequency });
@@ -693,14 +693,14 @@
                     if(objAgreementLine.quantity){
                         agreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_quantity', value: objAgreementLine.quantity });
                     }
-                    if(objAgreementLine.rate){
-                        agreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_rate', value: objAgreementLine.rate });
-                    }
                     if(!isEmpty(objAgreementLine.priceLevelId)){
-                        newAgreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_price_level', value: objAgreementLine.priceLevelId});
+                        agreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_price_level', value: objAgreementLine.priceLevelId});
                     }
-                    else if(objAgreementLine.priceLevel){
-                        newAgreementDetailRec.setText({ fieldId: 'custrecord_ps_aad_price_level', text: objAgreementLine.priceLevel});
+                    else if(!isEmpty(objAgreementLine.priceLevel)){
+                        agreementDetailRec.setText({ fieldId: 'custrecord_ps_aad_price_level', text: objAgreementLine.priceLevel});
+                    }
+                    else if(objAgreementLine.rate){
+                        agreementDetailRec.setValue({ fieldId: 'custrecord_ps_aad_rate', value: objAgreementLine.rate });
                     }
                     if(objAgreementLine.billingFrequency){
                         agreementDetailRec.setText({ fieldId: 'custrecord_ps_aad_billing_frequency', text: objAgreementLine.billingFrequency });
@@ -894,10 +894,10 @@
                     message : result.message + "\nQuantity is missing."
                 }
             }
-            if(isEmpty(objAgreementLine.rate)){
+            if(isEmpty(objAgreementLine.rate) && isEmpty(objAgreementLine.priceLevel)){
                 result = {
                     isValid : false,
-                    message : result.message + "\nRate is missing."
+                    message : result.message + "\nRate/Price level is missing."
                 }
             }
             if(isEmpty(objAgreementLine.startDate)){

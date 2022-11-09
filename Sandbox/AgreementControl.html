@@ -378,7 +378,7 @@
 						<div class="form-group col-md-4 col-sm-6 col-12">
 							<div class="col-md-9 col-sm-10">
 								<label for="dd_agreement_status_list">Status:</label>
-								<select id="dd_agreement_status_list" class="form-control"></select>
+								<select id="dd_agreement_status_list" class="form-control" disabled></select>
 							</div>
 						</div>
 					</div>
@@ -568,16 +568,16 @@
 									<div class="col-md-12">
 										<label for="txt_line_rate">Rate:<span style="color: #d41111;">*</span></label>
 										<input type="number" class="form-control required" id="txt_line_rate"
-											required />
+											required="required" />
 									</div>
 								</div>
 							</div>
 							<div class="form-row">
 								<div class="form-group col-md-4">
 									<div class="col-md-12" style="height: 56px;">
-										<label for="dd_line_pricelevel">Price Level:</label>
-										<select class="form-control" id="dd_line_pricelevel"
-											style="width: 100%;height: 38px;"></select>
+										<label for="dd_line_pricelevel">Price Level:<span style="color: #d41111;">*</span></label>
+										<select class="form-control required" id="dd_line_pricelevel"
+											style="width: 100%;height: 38px;" required></select>
 									</div>
 								</div>
 								<div class="form-group col-md-4">
@@ -623,7 +623,7 @@
 								<div class="form-group col-md-4">
 									<div class="col-md-12">
 										<label for="txt_line_renewal_date">Next Renewal Date:</label>
-										<input type="date" class="form-control" id="txt_line_renewal_date" />
+										<input type="date" class="form-control" id="txt_line_renewal_date" disabled/>
 									</div>
 								</div>
 								<div class="form-group col-md-4">
@@ -635,7 +635,7 @@
 								<div class="form-group col-md-4">
 									<div class="col-md-12">
 										<label for="dd_line_status">Status:</label>
-										<select class="form-control" id="dd_line_status"></select>
+										<select class="form-control" id="dd_line_status" disabled></select>
 									</div>
 								</div>
 							</div>
@@ -705,15 +705,16 @@
 			onLoad();
 			//Clinet Side Events
 			$("#dd_subsidiary").on("change", function(){
-				var currentSubsidiary = $(this).val();
+				/*var currentSubsidiary = $(this).val();
+				console.log(currentSubsidiary);
 				if(isEmpty(currentSubsidiary)){
-					$("#dd_customers").attr("disabled", "disbaled");
-					$("#dd_contract_terms").attr("disabled", "disbaled");
+					$("#dd_customers").attr("disabled", "disabled");
+					$("#dd_contract_terms").attr("disabled", "disabled");
 				}
 				else{
 					$("#dd_customers").select2('destroy');
-					$("#dd_customers").removeAttr("disabled", "disbaled");
-					$("#dd_contract_terms").removeAttr("disabled", "disbaled");
+					$("#dd_customers").removeAttr("disabled", "disabled");
+					$("#dd_contract_terms").removeAttr("disabled", "disabled");
 					$("#dd_customers").html(parent.custpage_customer_list.value);
 					$("#dd_contract_terms").html(parent.custpage_contract_term_list.value);
 					$("#dd_customers").find("option").each(function () {
@@ -732,12 +733,59 @@
 						width: 'resolve',
 						dropdownParent: $("#form_header_flds")
 					});
+				}*/
+			 });
+			$("#dd_customers").on("change", function () {
+				var currentSubsidiary = $("#dd_customers option:selected").data("subsidiary");
+				if(isEmpty(currentSubsidiary)){
+					$("#dd_contract_terms").attr("disabled", "disabled");
+				}
+				else{
+					$("#dd_subsidiary").val(currentSubsidiary);
+					$("#dd_contract_terms").removeAttr("disabled", "disabled");
+					$("#dd_contract_terms").html(parent.custpage_contract_term_list.value);
+					$("#dd_contract_terms").find("option").each(function () {
+						currentOptionSubsidiary = $(this).data("subsidiary");
+						if (currentOptionSubsidiary != currentSubsidiary && $(this).val() != "") {
+							$(this).remove();
+						}
+					});
 				}
 			});
 			$("#dd_line_items").on("change", function () {
 				var agreementType = $("#dd_line_items option:selected").data("agreementtype");
 				if (agreementType) {
 					$("#dd_line_agreement_type").val(agreementType);
+				}
+			});
+			$("#dd_line_pricelevel").on("change", function () {
+				var priceLevel = $(this).val();
+				console.log(priceLevel);
+				if(!isEmpty(priceLevel)){
+					var priceType = $("#dd_line_pricelevel option:selected").data("pricetype");
+					if (priceType) {
+						$("#dd_line_pricingtype").val(priceType);
+					}
+					$("#txt_line_rate").removeClass("required");
+					$("#txt_line_rate").removeAttr("required");
+					$("#txt_line_rate").prop("disabled", true);
+				} 
+				else {
+					$("#txt_line_rate").addClass("required");
+					$("#txt_line_rate").attr('required');
+					$("#txt_line_rate").prop("disabled", false);
+				}
+			});
+			$("#txt_line_rate").on("change", function () {
+				var rate = $("#txt_line_rate").val();
+				if(!isEmpty(rate)){
+					$("#dd_line_pricelevel").removeClass("required");
+					$("#dd_line_pricelevel").removeAttr("required");
+					$("#dd_line_pricelevel").prop("disabled", true);
+				} else {
+					$("#dd_line_pricelevel").addClass("required");
+					$("#dd_line_pricelevel").attr('required');
+					$("#dd_line_pricelevel").prop("disabled", false);
 				}
 			});
 			$("#btn_agreement_cancel").on("click", function(){
@@ -752,7 +800,12 @@
 				var rate = parseFloat($("#txt_line_rate").val()||0);
 				$("#txt_line_amount").val(qty*rate);
 			});
+			$("#txt_line_end_date").on("change", function(){
+				var endDate = $("#txt_line_end_date").val();
+				$("#txt_line_renewal_date").val(moment(endDate).add(1,'days').format('YYYY-MM-DD'));
+			});
 			$(document).on("click", "#btn_new_agreement_line", function () {
+				enableAllControls("#newAgreementLineModal");
 				var lineItems = parent.custpage_line_items.value;
 				$("#dd_line_items").html(lineItems);
 				var isValid = checkRequiredFields("#form_header_flds");
@@ -773,7 +826,16 @@
 					//Set Default Start And End Date
 					$("#txt_line_context").val("create");
 					$("#txt_line_start_date").val($("#txt_agreement_start").val());
-					$("#txt_line_end_date").val($("#txt_agreement_end").val());
+					var endDate = $("#txt_agreement_end").val();
+					$("#txt_line_end_date").val(endDate);
+					$("#txt_line_renewal_date").val(moment(endDate).add(1,'days').format('YYYY-MM-DD'));
+					setDropDownValueByText("#dd_line_status","Pending Start");
+					$("#txt_line_amount").attr("disabled", "disabled");
+					$("#txt_line_nextbill_date").attr("disabled", "disabled");
+					$("#txt_line_renewal_date").attr("disabled", "disabled");
+					$("#txt_line_lastbill_date").attr("disabled", "disabled");
+					$("#dd_line_status").attr("disabled", "disabled");
+					$("#dd_line_agreement_type").attr("disabled", "disabled");
 					$("#agreementLineClose").hide();
 					$("#agreementLineSubmit").show();
 					$("#newAgreementLineModal").find(".modal-title").html("New Agreement Detail Line");
@@ -818,7 +880,7 @@
 						$("#txt_line_qty").val(currentLineDetails[0].quantity);
 						$("#txt_line_rate").val(currentLineDetails[0].rate);
 						$("#txt_line_amount").val(currentLineDetails[0].amount);
-						$("#dd_line_pricelevel").select2("val", currentLineDetails[0].priceLevelId);
+						$("#dd_line_pricelevel").val(currentLineDetails[0].priceLevelId).trigger('change');
 						$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
 						$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
 						$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
@@ -858,6 +920,7 @@
 				}
 			});
 			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_edit", function () {
+				enableAllControls("#newAgreementLineModal");
 				$("#dd_line_items").html(parent.custpage_line_items.value);
 				var subsidiary = $("#dd_subsidiary").val();
 				if (subsidiary) {
@@ -876,7 +939,6 @@
 							$(this).remove();
 						}
 					});
-					debugger;
 					var lineId = $(this).parents("tr").data("id");
 					var rowIndex = $(this).parents("tr").index();
 					var sId = $(this).parents("tr").data("sid");
@@ -889,13 +951,15 @@
 					}
 					if(currentLineDetails && currentLineDetails.length > 0){
 						$("#txt_line_context").val("edit");
+						//$("#txt_line_nextbill_date").prop("disabled", true);
+						//$("#txt_line_lastbill_date").prop("disabled", true);
 						$("#txt_line_sid").val(sId);
 						$("#txt_line_id").val(currentLineDetails[0].id);
 						$("#dd_line_items").val(currentLineDetails[0].itemId);
 						$("#txt_line_qty").val(currentLineDetails[0].quantity);
 						$("#txt_line_rate").val(currentLineDetails[0].rate);
 						$("#txt_line_amount").val(currentLineDetails[0].amount);
-						$("#dd_line_pricelevel").select2("val", currentLineDetails[0].priceLevelId);
+						$("#dd_line_pricelevel").val(currentLineDetails[0].priceLevelId).trigger('change');
 						$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
 						$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
 						$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
@@ -913,6 +977,12 @@
 							width: 'resolve',
 							dropdownParent: $("#newAgreementLineModal")
 						});
+						$("#txt_line_amount").attr("disabled", "disabled");
+						$("#txt_line_nextbill_date").attr("disabled", "disabled");
+						$("#txt_line_renewal_date").attr("disabled", "disabled");
+						$("#txt_line_lastbill_date").attr("disabled", "disabled");
+						$("#dd_line_status").attr("disabled", "disabled");
+						$("#dd_line_agreement_type").attr("disabled", "disabled");
 						//Display popup window
 						$("#agreementLineClose").hide();
 						$("#agreementLineSubmit").show();
@@ -997,8 +1067,9 @@
 												"item": groupMembers[m].name,
 												"itemType": $("#dd_line_items").select2().find(":selected").data("type"),
 												"quantity": parseFloat($("#txt_line_qty").val()) * (groupMembers[m].qty),
-												"rate": groupMembers[m].rate,
+												"rate": isEmpty($("#dd_line_pricelevel option:selected").val()) ? groupMembers[m].rate : "",
 												"priceLevel": $("#dd_line_pricelevel option:selected").text(),
+												"priceLevelId": $("#dd_line_pricelevel option:selected").val(),
 												"billingFrequency": $("#dd_line_billingFreq option:selected").text(),
 												"billingFrequencyId": $("#dd_line_billingFreq option:selected").val(),
 												"createdFromTransactionId": $("#dd_line_createdfrom option:selected").val(),
@@ -1149,6 +1220,7 @@
 									if(response.isValid == true){
 										togglePageLoader(false);
 										$("#errorMappingModal .modal-title").html("Info");
+										$("#errorMappingModal .modal-header").css("background", "rgb(47 165 140)");
 										$("#errorMappingModal .modal-body > p").html("Agreement saved successfully.");
 										$("#errorMappingModal").modal("show");
 										parent.window.location.href = response.url;
@@ -1196,8 +1268,8 @@
 						$("#btn_agreement_cancel").hide();
 					}
 					$("#dd_customers").select2('destroy');
-					$("#dd_customers").removeAttr("disabled", "disbaled");
-					$("#dd_contract_terms").removeAttr("disabled", "disbaled");
+					$("#dd_customers").removeAttr("disabled", "disabled");
+					$("#dd_contract_terms").removeAttr("disabled", "disabled");
 					$("#dd_customers").html(parent.custpage_customer_list.value);
 					$("#dd_contract_terms").html(parent.custpage_contract_term_list.value);
 					$("#dd_customers").find("option").each(function () {
@@ -1246,11 +1318,20 @@
 			else if(context == "edit" || context == "create"){
 				$("#btn_agreement_edit").hide();
 				$("#btn_agreement_save").show();
+				if(context == "create"){
+				   $("#dd_customers").html(parent.custpage_customer_list.value);
+				   $("#dd_customers").select2({
+						width: 'resolve',
+						dropdownParent: $("#form_header_flds")
+				   });
+				   setDropDownValueByText("#dd_agreement_status_list", "Pending Start");
+				}
 			}
 			var subsidiary = $("#dd_subsidiary").val();
 			if(isEmpty(subsidiary)){
-				$("#dd_customers").attr("disabled", "disbaled");
-				$("#dd_contract_terms").attr("disabled", "disbaled");
+				
+				//$("#dd_customers").attr("disabled", "disabled");
+				$("#dd_contract_terms").attr("disabled", "disabled");
 			}
 		}
 		function populateControlList() {
@@ -1295,10 +1376,16 @@
 			}
 		}
 		function disableAllControls(elem) {
-			$(elem).find("input").attr("disabled", "disbaled");
-			$(elem).find("input[type=checkbox]").attr("disabled", "disbaled");
-			$(elem).find("input[type=date]").attr("disabled", "disbaled");
-			$(elem).find("select").attr("disabled", "disbaled");
+			$(elem).find("input").attr("disabled", "disabled");
+			$(elem).find("input[type=checkbox]").attr("disabled", "disabled");
+			$(elem).find("input[type=date]").attr("disabled", "disabled");
+			$(elem).find("select").attr("disabled", "disabled");
+		}
+		function enableAllControls(elem) {
+			$(elem).find("input").removeAttr("disabled", "disabled");
+			$(elem).find("input[type=checkbox]").removeAttr("disabled", "disabled");
+			$(elem).find("input[type=date]").removeAttr("disabled", "disabled");
+			$(elem).find("select").removeAttr("disabled", "disabled");
 		}
 		function resizeIframe() {
 			var iframe = parent.document.getElementById("agreement");
@@ -1310,7 +1397,6 @@
 			}
 		}
 		function populateAgreementLines(lines) {
-			debugger;
 			if (lines && lines.length > 0) {
 				var rowHtml = "";
 				var sId;
@@ -1428,6 +1514,7 @@
 			});
 			$(elemId).find("select").each(function () {
 				$($(this).find("option:selected")).removeAttr("selected");
+				$(this).val("").trigger("change");
 			});
 		}
 		function getClinetConfig() {
