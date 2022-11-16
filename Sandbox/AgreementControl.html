@@ -310,6 +310,7 @@
 			</div>
 			<div class="col-md-8" style="margin-left: 33px;">
 				<input type="button" class="btn btn-primary" id="btn_agreement_edit" value="Edit" style="min-width: 120px;background: #24385b;">
+				<input type="button" class="btn btn-primary" id="btn_agreement_merge" value="Merge" style="min-width: 120px;background: #24385b;">
 				<input type="button" class="btn btn-primary" id="btn_agreement_save" value="Save" style="min-width: 120px;background: #24385b;">
 				<!-- <input type="button" class="btn btn-success" value="New" style="min-width: 120px;"> -->
 				<input type="button" class="btn btn-danger" id="btn_agreement_cancel" value="Cancel Agreement" style="min-width: 150px;">
@@ -463,6 +464,7 @@
 										<table class="table table-bordered" id="tbl_agreement_transactions">
 											<thead>
 												<tr>
+													<th style="width: 150px;">Actions</th>
 													<th>Date</th>
 													<th>Type</th>
 													<th>Document Number</th>
@@ -851,6 +853,22 @@
 					$("#errorMappingModal").modal("show");
 				}
 			});
+			$("#tbl_agreement_transactions").on("click", ".transaction_view", function(){
+				var tranId = $(this).data("id");
+				var tranType = $(this).data("recordtype");
+				var entryPointRequire = getClinetConfig();
+				entryPointRequire([csScriptUrl], function (mod) {
+					try {
+						var tranUrl = mod.getRecordUrl(tranType, tranId);
+						parent.window.open(tranUrl, "_blank").focus();
+					}
+					catch (exp) {
+						$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to navigate to the transaction record.");
+						$("#errorMappingModal").modal("show");
+						console.log(exp);
+					}
+				});
+			});
 			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_view", function(){
 				var lineItems = parent.custpage_line_items.value;
 				$("#dd_line_items").html(lineItems);
@@ -1113,7 +1131,7 @@
 															agreementLines = agreementLines.filter(function(n){return n.id != response.success[s].id});
 															agreementLines.push(response.success[s].data[0]);
 															populateAgreementLines(response.success[s].data);
-															resizeIframe();
+															resizeElementToWindowSize(parent.document.getElementById("agreement"));
 														}
 														$("#btn_line_modal_close").click();
 													}
@@ -1158,7 +1176,7 @@
 										else {
 											agreementLines = agreementLines.concat(lines);
 										}
-										resizeIframe();
+										resizeElementToWindowSize(parent.document.getElementById("agreement"));
 										togglePageLoader(false);
 										$("#btn_line_modal_close").click();
 									}
@@ -1309,14 +1327,16 @@
 				//Populate Conclusion Events
 				populateConclusionEvents(agreementDetails.conclusionEvents);
 			}
-			resizeIframe();
+			resizeElementToWindowSize(parent.document.getElementById("agreement"));
 			if(context == "view"){
 				disableAllControls("#form_header_flds");
 				$("#btn_agreement_save").hide();
 				$("#btn_agreement_edit").show();
+				$("#btn_agreement_merge").show();
 			}
 			else if(context == "edit" || context == "create"){
 				$("#btn_agreement_edit").hide();
+				$("#btn_agreement_merge").hide();
 				$("#btn_agreement_save").show();
 				if(context == "create"){
 				   $("#dd_customers").html(parent.custpage_customer_list.value);
@@ -1329,7 +1349,6 @@
 			}
 			var subsidiary = $("#dd_subsidiary").val();
 			if(isEmpty(subsidiary)){
-				
 				//$("#dd_customers").attr("disabled", "disabled");
 				$("#dd_contract_terms").attr("disabled", "disabled");
 			}
@@ -1387,13 +1406,13 @@
 			$(elem).find("input[type=date]").removeAttr("disabled", "disabled");
 			$(elem).find("select").removeAttr("disabled", "disabled");
 		}
-		function resizeIframe() {
+		function resizeElementToWindowSize(elem) {
 			var iframe = parent.document.getElementById("agreement");
 			if(isEmpty(agreementLines)){
-				$(iframe).css("min-height", parent.document.body.clientHeight + "px");
+				$(elem).css("min-height", parent.document.body.clientHeight + "px");
 			}
 			else{
-				iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+				elem.height = iframe.contentWindow.document.body.scrollHeight + "px";
 			}
 		}
 		function populateAgreementLines(lines) {
@@ -1433,7 +1452,12 @@
 			if (transactions && transactions.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < transactions.length; t++) {
-					rowHtml = '<td>'+ transactions[t].date + '</td>\
+					rowHtml = '<td>\
+								<a data-id="'+transactions[t].id+'" data-recordtype="'+transactions[t].recordType+'" class="new transaction_view" title="View" \
+									data-toggle="tooltip"><i class="material-icons">remove_red_eye</i>\
+								</a>\
+							</td>\
+							<td>'+ transactions[t].date + '</td>\
 							<td>'+ transactions[t].type + '</td>\
 							<td>'+ transactions[t].documentNumber + '</td>\
 							<td>'+ transactions[t].amount + '</td>\

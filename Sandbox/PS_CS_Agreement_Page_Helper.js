@@ -2,8 +2,8 @@
  *@NApiVersion 2.x
  *@NScriptType ClientScript
  */
-define(['N/error', 'N/log', 'N/search', './moment.min.js','N/https'],
-    function (error, log, search, moment, https) {
+define(['N/error', 'N/log', 'N/search', './moment.min.js', 'N/https', 'N/url'],
+    function (error, log, search, moment, https, url) {
         var pageLoaderURl = '';
         function pageInit(context) {
             pageLoaderURl = getLoaderGif();
@@ -80,34 +80,43 @@ define(['N/error', 'N/log', 'N/search', './moment.min.js','N/https'],
                     qty: result.getValue({ name: "memberquantity", label: "Member Quantity" }),
                     description: result.getValue({ name: "salesdescriptiontranslated", join: "memberItem", label: "Sales Description (Translated)" }),
                     rate: result.getValue({ name: "baseprice", join: "memberItem", label: "Base Price" }),
-    
+
                 });
                 return true;
             });
             return memberList;
         }
-        function sendAPICall(param, url, method){
+        function sendAPICall(param, url, method) {
             var response = null;
-            if(url == "GET"){
-                response = https.get({url: url});
+            if (url == "GET") {
+                response = https.get({ url: url });
             }
-            else if(method == "POST"){
+            else if (method == "POST") {
                 response = https.post({
                     url: url,
                     body: param,
                 });
             }
-            if(response){
+            if (response) {
                 var myresponse_code = response.code;
                 var myresponse_headers = response.headers;
                 return response.body;
             }
             return response;
         }
+        function getRecordUrl(type, id) {
+            var recordURL = url.resolveRecord({
+                recordType: type,
+                recordId: id,
+                isEditMode: false
+            });
+            return recordURL;
+        }
 
         return {
             pageInit: pageInit,
             getGroupItemMembers: getGroupItemMembers,
-            sendAPICall: sendAPICall
+            sendAPICall: sendAPICall,
+            getRecordUrl: getRecordUrl
         };
     });

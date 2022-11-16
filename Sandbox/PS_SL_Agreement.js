@@ -630,7 +630,7 @@
                          search.createColumn({
                              name: "formulatext",
                              summary: "MAX",
-                             formula: "'['||ns_concat( distinct '{\"id\":\"'||{custbody_ps_agreement.internalid}||'\",\"currency\":\"'||{custbody_ps_agreement.currency}||'\",\"status\":\"'||{custbody_ps_agreement.status}||'\",\"fxamount\":\"'||{custbody_ps_agreement.fxamount}||'\",\"amount\":\"'||{custbody_ps_agreement.amount}||'\",\"type\":\"'||{custbody_ps_agreement.type}||'\",\"documentNumber\":\"'||{custbody_ps_agreement.number}||'\",\"date\":\"'||{custbody_ps_agreement.trandate}||'\"}')||']'",
+                             formula: "'['||ns_concat( distinct '{\"id\":\"'||{custbody_ps_agreement.internalid}||'\",\"currency\":\"'||{custbody_ps_agreement.currency}||'\",\"recordType\":\"'||{custbody_ps_agreement.recordtype}||'\",\"status\":\"'||{custbody_ps_agreement.status}||'\",\"fxamount\":\"'||{custbody_ps_agreement.fxamount}||'\",\"amount\":\"'||{custbody_ps_agreement.amount}||'\",\"type\":\"'||{custbody_ps_agreement.type}||'\",\"documentNumber\":\"'||{custbody_ps_agreement.number}||'\",\"date\":\"'||{custbody_ps_agreement.trandate}||'\"}')||']'",
                              label: "Transaction Data"
                          }),
                          search.createColumn({
