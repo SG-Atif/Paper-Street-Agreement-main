@@ -156,7 +156,7 @@ define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/red
                         label: 'Line Usage'
                     }).updateDisplayType({
                         displayType: serverWidget.FieldDisplayType.HIDDEN
-                    }).defaultValue = ""; //getLineUsage();
+                    }).defaultValue = getLineUsage(lineId);
                     form.addField({
                         id: 'custpage_payment_method_list',
                         type: serverWidget.FieldType.LONGTEXT,
@@ -576,13 +576,13 @@ define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/red
             });
             return lineDetail;
         }
-        function getLineUsage(){
+        function getLineUsage(lineId){
             var usageResult = [];
             var lineUsageDrch = search.create({
                 type: "customrecord_ps_agreement_usage",
                 filters:
                 [
-                   ["custrecord_ps_au_agreement_detail","anyof","506"]
+                   ["custrecord_ps_au_agreement_detail","anyof", lineId]
                 ],
                 columns:
                 [
@@ -591,20 +591,23 @@ define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/red
                    search.createColumn({name: "custrecord_ps_au_item", label: "Item"}),
                    search.createColumn({name: "custrecord_ps_au_usage_qty", label: "Usage Quantity"}),
                    search.createColumn({name: "custrecord_ps_au_agreement_detail", label: "Agreement Detail"}),
-                   search.createColumn({name: "custrecord_ps_au_demo", label: "Memo"})
+                   search.createColumn({name: "custrecord_ps_au_demo", label: "Memo"}),
+                   search.createColumn({name: "custrecord_ps_au_is_billed", label: "Is Billed"})
                 ]
              });
              lineUsageDrch.run().each(function(result){
                 usageResult.push({
                     id: result.getValue({name: "internalid", sort: search.Sort.DESC, label: "Internal ID"}),
                     usageDate: result.getValue({name: "custrecord_ps_au_usage_date", label: "Usage Date"}),
-                    usageItem: result.getValue({name: "custrecord_ps_au_item", label: "Item"}),
+                    usageItem: result.getText({name: "custrecord_ps_au_item", label: "Item"}),
                     usageQty: result.getValue({name: "custrecord_ps_au_usage_qty", label: "Usage Quantity"}),
                     agreementLineId : result.getValue({name: "custrecord_ps_au_agreement_detail", label: "Agreement Detail"}),
-                    memo: result.getValue({name: "custrecord_ps_au_demo", label: "Memo"})
+                    memo: result.getValue({name: "custrecord_ps_au_demo", label: "Memo"}),
+                    isBilled : result.getValue({name: "custrecord_ps_au_is_billed", label: "Is Billed"}),
                 });
                 return true;
              });
+            return JSON.stringify(usageResult);
         }
 
         return {

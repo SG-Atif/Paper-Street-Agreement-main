@@ -870,72 +870,86 @@
 				});
 			});
 			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_view", function(){
-				var lineItems = parent.custpage_line_items.value;
-				$("#dd_line_items").html(lineItems);
-				var subsidiary = $("#dd_subsidiary").val();
-				if (subsidiary) {
-					//Filter down item dropdown by subsidiary
-					var currentOptionSubsidiary, includeChildren;
-					$("#dd_line_items").find("option").each(function () {
-						currentOptionSubsidiary = $(this).data("subsidiary");
-						if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
-							$(this).remove();
-						}
-					});
-					var lineId = $(this).parents("tr").data("id");
-					var rowIndex = $(this).parents("tr").index();
-					var currentLineDetails = [];
-					if(isEmpty(lineId)){
-						currentLineDetails = agreementLines[rowIndex] ? [agreementLines[rowIndex]] : [];
+				var recordId = $(this).data("id");
+				var tranType = "customrecord_ps_agreement_details";
+				var entryPointRequire = getClinetConfig();
+				entryPointRequire([csScriptUrl], function (mod) {
+					try {
+						var recordURL = mod.getRecordUrl(tranType, recordId);
+						parent.window.open(recordURL, "_blank").focus();
 					}
-					else{
-						currentLineDetails = agreementLines.filter(function(x){return x.id == lineId});
-					}
-					if(currentLineDetails && currentLineDetails.length > 0){
-						$("#txt_line_id").val(currentLineDetails[0].id);
-						$("#txt_line_context").val("view");
-						$("#dd_line_items").val(currentLineDetails[0].itemId);
-						$("#txt_line_qty").val(currentLineDetails[0].quantity);
-						$("#txt_line_rate").val(currentLineDetails[0].rate);
-						$("#txt_line_amount").val(currentLineDetails[0].amount);
-						$("#dd_line_pricelevel").val(currentLineDetails[0].priceLevelId).trigger('change');
-						$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
-						$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
-						$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
-						$("#txt_line_renewal_date").val(isEmpty(currentLineDetails[0].renewalDate) ? "" : moment(currentLineDetails[0].renewalDate).format('YYYY-MM-DD'));
-						$("#txt_line_lastbill_date").val(isEmpty(currentLineDetails[0].lastBillingDate) ? "" : moment(currentLineDetails[0].lastBillingDate).format('YYYY-MM-DD'));
-						$("#dd_line_usagegroup").val(currentLineDetails[0].usageGroup);
-						$("#txt_line_req_min").val(currentLineDetails[0].requiredMinimum);
-						$("#txt_line_tranlinekey").val(currentLineDetails[0].transactionLineUniqueKey);
-						$("#dd_line_createdfrom").val(currentLineDetails[0].createdFromTransaction);
-						setDropDownValueByText("#dd_line_agreement_type", isEmpty(currentLineDetails[0].agreementLineType) ? "" : currentLineDetails[0].agreementLineType);
-						setDropDownValueByText("#dd_line_pricingtype", isEmpty(currentLineDetails[0].agreementPricingType) ? "" : currentLineDetails[0].agreementPricingType);
-						setDropDownValueByText("#dd_line_status", isEmpty(currentLineDetails[0].status) ? "" : currentLineDetails[0].status);
-						setDropDownValueByText("#dd_line_billingFreq", isEmpty(currentLineDetails[0].billingFrequency) ? "" : currentLineDetails[0].billingFrequency);
-						$("#dd_line_items").select2({
-							width: 'resolve',
-							dropdownParent: $("#newAgreementLineModal")
-						});
-						//Display popup window
-						disableAllControls("#newAgreementLineModal");
-						$("#agreementLineClose").show();
-						$("#agreementLineSubmit").hide();
-						$("#newAgreementLineModal").find(".modal-title").html("Agreement Detail Line");
-						var offset = $(window.parent.document).scrollTop();
-						viewportHeight = $(window).height();
-						$("#newAgreementLineModal").css('top', (offset + (viewportHeight / 2)) - ($('#newAgreementLineModal').outerHeight() / 2));
-						$("#newAgreementLineModal").modal({ backdrop: 'static', keyboard: false }, "show");
-						$(window.parent.document.body).css("overflow", "hidden");
-					}
-					else{
-						$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to find current line data for this page.");
+					catch (exp) {
+						$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to navigate to the agreement detail line.");
 						$("#errorMappingModal").modal("show");
+						console.log(exp);
 					}
-				}
-				else {
-					$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
-					$("#errorMappingModal").modal("show");
-				}
+				});
+				// var lineItems = parent.custpage_line_items.value;
+				// $("#dd_line_items").html(lineItems);
+				// var subsidiary = $("#dd_subsidiary").val();
+				// if (subsidiary) {
+				// 	//Filter down item dropdown by subsidiary
+				// 	var currentOptionSubsidiary, includeChildren;
+				// 	$("#dd_line_items").find("option").each(function () {
+				// 		currentOptionSubsidiary = $(this).data("subsidiary");
+				// 		if (currentOptionSubsidiary != subsidiary && $(this).val() != "") {
+				// 			$(this).remove();
+				// 		}
+				// 	});
+				// 	var lineId = $(this).parents("tr").data("id");
+				// 	var rowIndex = $(this).parents("tr").index();
+				// 	var currentLineDetails = [];
+				// 	if(isEmpty(lineId)){
+				// 		currentLineDetails = agreementLines[rowIndex] ? [agreementLines[rowIndex]] : [];
+				// 	}
+				// 	else{
+				// 		currentLineDetails = agreementLines.filter(function(x){return x.id == lineId});
+				// 	}
+				// 	if(currentLineDetails && currentLineDetails.length > 0){
+				// 		$("#txt_line_id").val(currentLineDetails[0].id);
+				// 		$("#txt_line_context").val("view");
+				// 		$("#dd_line_items").val(currentLineDetails[0].itemId);
+				// 		$("#txt_line_qty").val(currentLineDetails[0].quantity);
+				// 		$("#txt_line_rate").val(currentLineDetails[0].rate);
+				// 		$("#txt_line_amount").val(currentLineDetails[0].amount);
+				// 		$("#dd_line_pricelevel").val(currentLineDetails[0].priceLevelId).trigger('change');
+				// 		$("#txt_line_start_date").val(isEmpty(currentLineDetails[0].startDate) ? "" : moment(currentLineDetails[0].startDate).format('YYYY-MM-DD'));
+				// 		$("#txt_line_end_date").val(isEmpty(currentLineDetails[0].endDate) ?  "" : moment(currentLineDetails[0].endDate).format('YYYY-MM-DD'));
+				// 		$("#txt_line_nextbill_date").val(isEmpty(currentLineDetails[0].nextBillingDate) ? "" : moment(currentLineDetails[0].nextBillingDate).format('YYYY-MM-DD'));
+				// 		$("#txt_line_renewal_date").val(isEmpty(currentLineDetails[0].renewalDate) ? "" : moment(currentLineDetails[0].renewalDate).format('YYYY-MM-DD'));
+				// 		$("#txt_line_lastbill_date").val(isEmpty(currentLineDetails[0].lastBillingDate) ? "" : moment(currentLineDetails[0].lastBillingDate).format('YYYY-MM-DD'));
+				// 		$("#dd_line_usagegroup").val(currentLineDetails[0].usageGroup);
+				// 		$("#txt_line_req_min").val(currentLineDetails[0].requiredMinimum);
+				// 		$("#txt_line_tranlinekey").val(currentLineDetails[0].transactionLineUniqueKey);
+				// 		$("#dd_line_createdfrom").val(currentLineDetails[0].createdFromTransaction);
+				// 		setDropDownValueByText("#dd_line_agreement_type", isEmpty(currentLineDetails[0].agreementLineType) ? "" : currentLineDetails[0].agreementLineType);
+				// 		setDropDownValueByText("#dd_line_pricingtype", isEmpty(currentLineDetails[0].agreementPricingType) ? "" : currentLineDetails[0].agreementPricingType);
+				// 		setDropDownValueByText("#dd_line_status", isEmpty(currentLineDetails[0].status) ? "" : currentLineDetails[0].status);
+				// 		setDropDownValueByText("#dd_line_billingFreq", isEmpty(currentLineDetails[0].billingFrequency) ? "" : currentLineDetails[0].billingFrequency);
+				// 		$("#dd_line_items").select2({
+				// 			width: 'resolve',
+				// 			dropdownParent: $("#newAgreementLineModal")
+				// 		});
+				// 		//Display popup window
+				// 		disableAllControls("#newAgreementLineModal");
+				// 		$("#agreementLineClose").show();
+				// 		$("#agreementLineSubmit").hide();
+				// 		$("#newAgreementLineModal").find(".modal-title").html("Agreement Detail Line");
+				// 		var offset = $(window.parent.document).scrollTop();
+				// 		viewportHeight = $(window).height();
+				// 		$("#newAgreementLineModal").css('top', (offset + (viewportHeight / 2)) - ($('#newAgreementLineModal').outerHeight() / 2));
+				// 		$("#newAgreementLineModal").modal({ backdrop: 'static', keyboard: false }, "show");
+				// 		$(window.parent.document.body).css("overflow", "hidden");
+				// 	}
+				// 	else{
+				// 		$("#errorMappingModal .modal-body > p").html("Something went wrong! Unable to find current line data for this page.");
+				// 		$("#errorMappingModal").modal("show");
+				// 	}
+				// }
+				// else {
+				// 	$("#errorMappingModal .modal-body > p").html("Please enter required header fields for agreements.");
+				// 	$("#errorMappingModal").modal("show");
+				// }
 			});
 			$("#tbl_agreement_detail_lies").on("click", ".agreement_line_edit", function () {
 				enableAllControls("#newAgreementLineModal");
@@ -1428,7 +1442,7 @@
 						existingRow = $("#tbl_agreement_detail_lies").find('tr[data-sid="'+lines[l].sId+'"]');
 					}
 					rowHtml = '<td>\
-								<a class="new agreement_line_view" title="View" data-toggle="tooltip"><i class="material-icons">remove_red_eye</i></a>\
+								<a data-id="'+lines[l].id+'"class="new agreement_line_view" title="View" data-toggle="tooltip"><i class="material-icons">remove_red_eye</i></a>\
 								<a class="edit agreement_line_edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>\
 							</td>\
 							<td>'+ lines[l].item + '</td>\
