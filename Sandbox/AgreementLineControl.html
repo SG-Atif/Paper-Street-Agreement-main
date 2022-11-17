@@ -907,6 +907,7 @@
 			if (lines && lines.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < lines.length; t++) {
+					rowHtml = "";
 					if(lines[t].isBilled == true){
 						rowHtml = '<td>\
 								<a data-id="'+lines[t].id+'" data-recordtype="customrecord_ps_agreement_usage" class="new usage_line_view" title="View" \
@@ -918,7 +919,9 @@
 							<td>'+ lines[t].usageQty + '</td>\
 							<td>'+ lines[t].memo + '</td>';
 					}
-					$('#tbl_agreement_usage_billed > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+					if(rowHtml != ""){
+						$('#tbl_agreement_usage_billed > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+					}
 					resizeIframe();
 				}
 			}
@@ -927,6 +930,7 @@
 			if (lines && lines.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < lines.length; t++) {
+					rowHtml = "";
 					if(lines[t].isBilled == false){
 						rowHtml = '<td>\
 								<a data-id="'+lines[t].id+'" data-recordtype="customrecord_ps_agreement_usage" class="new usage_line_view" title="View" \
@@ -938,7 +942,9 @@
 							<td>'+ lines[t].usageQty + '</td>\
 							<td>'+ lines[t].memo + '</td>';
 					}
-					$('#tbl_agreement_usage_unbilled > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+					if(rowHtml != ""){
+						$('#tbl_agreement_usage_unbilled > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
+					}
 					resizeIframe();
 				}
 			}
