@@ -464,7 +464,6 @@
 										<table class="table table-bordered" id="tbl_agreement_transactions">
 											<thead>
 												<tr>
-													<th style="width: 150px;">Actions</th>
 													<th>Date</th>
 													<th>Type</th>
 													<th>Document Number</th>
@@ -696,7 +695,7 @@
 		</div>
 	</div>
 	<script>
-		var csScriptUrl = '/SuiteScripts/SG Scripts/PS Agreement/PS_CS_Agreement_Page_Helper';
+		var csScriptUrl = '/SuiteBundles/Bundle 443331/PS_CS_Agreement_Page_Helper';// //
 		var pageLoaderURL;
 		var agreementLines = [];
 		var agreementId;
@@ -704,6 +703,9 @@
 		var context;
 		var cancellationSuiteletUrl;
 		$(document).ready(function () {
+			if(parent.window.location.host == 'tstdrv2175778.app.netsuite.com'){
+				csScriptUrl = '/SuiteScripts/SG Scripts/PS Agreement/PS_CS_Agreement_Page_Helper';
+			}
 			onLoad();
 			//Clinet Side Events
 			$("#dd_subsidiary").on("change", function(){
@@ -1042,6 +1044,7 @@
 				resetFields("#newAgreementLineModal");
 			});
 			$("#newAgreementLineModal").on("click", "#agreementLineSubmit", function () {
+				debugger;
 				var isValid = checkRequiredFields("#modal_form");
 				if (isValid == true) {
 					var dateValidation = validateLineDate();
@@ -1413,6 +1416,7 @@
 			$(elem).find("input[type=checkbox]").attr("disabled", "disabled");
 			$(elem).find("input[type=date]").attr("disabled", "disabled");
 			$(elem).find("select").attr("disabled", "disabled");
+			$("#btn_new_agreement_line").attr("disabled", "disabled");
 		}
 		function enableAllControls(elem) {
 			$(elem).find("input").removeAttr("disabled", "disabled");
@@ -1422,12 +1426,12 @@
 		}
 		function resizeElementToWindowSize(elem) {
 			var iframe = parent.document.getElementById("agreement");
-			if(isEmpty(agreementLines)){
+			//if(isEmpty(agreementLines)){
 				$(elem).css("min-height", parent.document.body.clientHeight + "px");
-			}
-			else{
-				elem.height = iframe.contentWindow.document.body.scrollHeight + "px";
-			}
+			// }
+			// else{
+			// 	elem.height = iframe.contentWindow.document.body.scrollHeight + "px";
+			//}
 		}
 		function populateAgreementLines(lines) {
 			if (lines && lines.length > 0) {
@@ -1466,14 +1470,9 @@
 			if (transactions && transactions.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < transactions.length; t++) {
-					rowHtml = '<td>\
-								<a data-id="'+transactions[t].id+'" data-recordtype="'+transactions[t].recordType+'" class="new transaction_view" title="View" \
-									data-toggle="tooltip"><i class="material-icons">remove_red_eye</i>\
-								</a>\
-							</td>\
-							<td>'+ transactions[t].date + '</td>\
+					rowHtml = '<td>'+ transactions[t].date + '</td>\
 							<td>'+ transactions[t].type + '</td>\
-							<td>'+ transactions[t].documentNumber + '</td>\
+							<td><a href="#" data-id="'+transactions[t].id+'" class="transaction_view" data-recordtype="'+transactions[t].recordType+'" >'+ transactions[t].documentNumber + '</a></td>\
 							<td>'+ transactions[t].amount + '</td>\
 							<td>'+ transactions[t].fxamount + '</td>\
 							<td>'+ transactions[t].currency + '</td>\

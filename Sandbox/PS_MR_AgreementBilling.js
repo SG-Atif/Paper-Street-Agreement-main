@@ -33,8 +33,8 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     type: "customrecord_ps_agreement_details",
                     filters:
                         [
-                            //["custrecord_ps_aad_agreement", "anyof", "201"],
-                            ["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingAdvanceDays+" THEN 1 ELSE 0 END","equalto","1"],
+                            ["custrecord_ps_aad_agreement", "anyof", "7117"],
+                            //["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingAdvanceDays+" THEN 1 ELSE 0 END","equalto","1"],
                             "AND",
                             ["custrecord_ps_aad_agreement.custrecord_ps_a_subsidiary", "anyof", subsidiary],
                             "AND",
@@ -402,42 +402,10 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     newInvoice.setValue({ fieldId: "custbody_ps_agreement_payment_method", value: agreementRec.getValue("custrecord_ps_a_payment_method") });
                     newInvoice.setValue({ fieldId: "currency", value: agreementRec.getValue("custrecord_ps_a_currency") });
                     for (var j = 0; j < agreementDetailList.length; j++) {
-                        newInvoice.selectNewLine({ sublistId: 'item' });
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'item',
-                            value: agreementDetailList[j].item,
-                        });
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'custcol_ps_agreement_pricing',
-                            value: agreementDetailList[j].priceLevel,
-                        });
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'custcol_ps_agreement_type',
-                            value: agreementDetailList[j].agreementType,
-                        });
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'custcol_ps_required_minimum',
-                            value: agreementDetailList[j].requiredMinimum,
-                        });
-                        //For PatientNow
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'custcol_line_start_date',
-                            value: format.parse({ value: moment(agreementDetailList[j].startDate).format(dateFormat), type: format.Type.DATE }),
-                        });
-                        newInvoice.setCurrentSublistValue({
-                            sublistId: 'item',
-                            fieldId: 'custcol_line_end_date',
-                            value: format.parse({ value: moment(agreementDetailList[j].endDate).format(dateFormat), type: format.Type.DATE }),
-                        });
                         if (agreementDetailList[j].agreementType == "2") {//Usage line
                             newInvoice = addUsageLine(newInvoice, agreementDetailList[j]);
                         }
-                        else {//Subscription line
+                        else if(agreementDetailList[j].agreementType == "1"){//Subscription line
                             newInvoice = addSubscriptionLine(newInvoice, agreementDetailList[j]);
                         }
                     }
@@ -494,8 +462,8 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                 type: "customrecord_ps_agreement_details",
                 filters:
                     [
-                        //["custrecord_ps_aad_next_billing_date","on","10/1/2024"],
-                        ["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingDays+" THEN 1 ELSE 0 END","equalto","1"],
+                        ["custrecord_ps_aad_next_billing_date","on","12/15/2022"],
+                        //["formulanumeric: CASE WHEN (ROUND(({custrecord_ps_aad_next_billing_date}-{today}), 0)) = "+billingDays+" THEN 1 ELSE 0 END","equalto","1"],
                         //"AND", 
                         //["internalid", "anyof", ["8814", "8815", "8816"]],
                         "AND",
@@ -582,6 +550,27 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
             return invoice;
         }
         function addSubscriptionLine(invoice, lineData) {
+            invoice.selectNewLine({ sublistId: 'item' });
+            invoice.setCurrentSublistValue({
+                sublistId: 'item',
+                fieldId: 'item',
+                value: lineData.item,
+            });
+            invoice.setCurrentSublistValue({
+                sublistId: 'item',
+                fieldId: 'custcol_ps_agreement_pricing',
+                value: lineData.priceLevel,
+            });
+            invoice.setCurrentSublistValue({
+                sublistId: 'item',
+                fieldId: 'custcol_ps_agreement_type',
+                value: lineData.agreementType,
+            });
+            invoice.setCurrentSublistValue({
+                sublistId: 'item',
+                fieldId: 'custcol_ps_required_minimum',
+                value: lineData.requiredMinimum,
+            });
             invoice.setCurrentSublistValue({
                 sublistId: 'item',
                 fieldId: 'quantity',
@@ -678,47 +667,172 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
             if (usageEndDate) {
                 var usageQty = getUsageQty(lineData.id, lineData.item, usageStartDate, usageEndDate);
                 log.debug({ title: "Qty | Usage Start Date | Usage End Date", details: usageQty + " | " + usageStartDate + " | " + usageEndDate });
+                var isSplitTeir = isSplitTierChecked(lineData.priceLevel);
+                log.debug({ title: "Is Price Level Set To Split Tiers", details: isSplitTeir});
                 if (usageQty > 0) {
+                    if(isSplitTeir == true){
+                        invoice = addSplitTierUsageLines(invoice, lineData, usageQty);
+                    }
+                    else{
+                        invoice.selectNewLine({ sublistId: 'item' });
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'item',
+                            value: lineData.item,
+                        });
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_ps_agreement_pricing',
+                            value: lineData.priceLevel,
+                        });
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_ps_agreement_type',
+                            value: lineData.agreementType,
+                        });
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'custcol_ps_required_minimum',
+                            value: lineData.requiredMinimum,
+                        });
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'quantity',
+                            value: usageQty,
+                        });
+                        var currentUsageRate = lineData.rate;
+                        var currentLineAmount = parseFloat(currentUsageRate || 0) * usageQty;
+                        if(lineData.priceLevel){
+                            var response = getRateAndAmount(lineData.priceLevel, lineData.billingFreq, usageQty, lineData.pricingType);
+                            if (parseFloat(response.rate || 0) > 0) {
+                                currentUsageRate = parseFloat(response.rate || 0);
+                                currentLineAmount = currentUsageRate * usageQty;
+                            }
+                        }
+                        if (currentUsageRate) {
+                            invoice.setCurrentSublistValue({
+                                sublistId: 'item',
+                                fieldId: 'rate',
+                                value: currentUsageRate, //.toFixed(2),
+                            });
+                            invoice.setCurrentSublistValue({
+                                sublistId: 'item',
+                                fieldId: 'amount',
+                                value: currentLineAmount,
+                            });
+                        }
+                        if (lineData.requiredMinimum && parseFloat(lineData.requiredMinimum || 0) > 0) {
+                            if (currentLineAmount < parseFloat(lineData.requiredMinimum)) {
+                                invoice.setCurrentSublistValue({
+                                    sublistId: 'item',
+                                    fieldId: 'amount',
+                                    value: lineData.requiredMinimum,
+                                });
+                            }
+                        }
+                        invoice.commitLine({
+                            sublistId: 'item'
+                        });
+                    }
+                }
+            }
+            return invoice;
+        }
+        function isSplitTierChecked(priceLevel){
+            var response = false;
+            if(priceLevel){
+                var lookupResults = search.lookupFields({
+                    type: 'customrecord_ps_agreement_pricing',
+                    id: priceLevel,
+                    columns: ['custrecord_ps_ap_per_tier_split']
+                });
+                if (lookupResults.custrecord_ps_ap_per_tier_split) {
+                    response = lookupResults.custrecord_ps_ap_per_tier_split;
+                }
+            }
+            return response;
+        }
+        function addSplitTierUsageLines(invoice, lineData, qty){
+            var perTierPriceSrch = search.create({
+                type: "customrecord_ps_agreement_pricing_detail",
+                filters:
+                    [
+                        ["custrecord_ps_ap_agreement_pricing", "anyof", lineData.priceLevel],
+                        "AND",
+                        ["custrecord_ps_ap_billing_frequency", "anyof", lineData.billingFreq]
+                    ],
+                columns:
+                    [
+                        search.createColumn({ name: "internalid", label: "Internal ID" }),
+                        search.createColumn({ name: "custrecord_ps_ap_agreement_pricing", label: "Agreement Pricing" }),
+                        search.createColumn({ name: "custrecord_ps_ap_min_qty", sort: search.Sort.ASC, label: "Min Qty" }),
+                        search.createColumn({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }),
+                        search.createColumn({ name: "custrecord_ps_ap_billing_frequency", label: "Billing Frequency" }),
+                        search.createColumn({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
+                        search.createColumn({ name: "custrecord_ps_req_agreement_pricing_type", join: "CUSTRECORD_PS_AP_AGREEMENT_PRICING", label: "Require Agreement Pricing Type" })
+                    ]
+            });
+            var qtyCalculation = qty;
+            var minQty;
+            var maxQty;
+            var assignedQty = 0;
+            log.debug("Total Usage Qty", qty);
+            perTierPriceSrch.run().each(function (result) {
+                minQty = parseFloat(result.getValue({ name: "custrecord_ps_ap_min_qty", sort: search.Sort.ASC, label: "Min Qty" }));
+                maxQty = parseFloat(result.getValue({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }));
+                if (minQty <= qty) {
+                    if (maxQty <= qty) {
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'quantity',
+                            value: maxQty - assignedQty,
+                        });
+                        assignedQty = maxQty;
+                    }
+                    else {
+                        qtyCalculation = (qty - (minQty - 1));
+                        invoice.setCurrentSublistValue({
+                            sublistId: 'item',
+                            fieldId: 'quantity',
+                            value: qtyCalculation,
+                        });
+                    }
+                    invoice.selectNewLine({ sublistId: 'item' });
                     invoice.setCurrentSublistValue({
                         sublistId: 'item',
-                        fieldId: 'quantity',
-                        value: usageQty,
+                        fieldId: 'item',
+                        value: lineData.item,
                     });
-                    var currentUsageRate = lineData.rate;
-                    var currentLineAmount = parseFloat(currentUsageRate || 0) * usageQty;
-                    var response = getRateAndAmount(lineData.priceLevel, lineData.billingFreq, usageQty, lineData.pricingType);
-                    if (parseFloat(response.rate || 0) > 0) {
-                        currentUsageRate = parseFloat(response.rate || 0);
-                        currentLineAmount = currentUsageRate * usageQty;
-                    }
+                    invoice.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_ps_agreement_pricing',
+                        value: lineData.priceLevel,
+                    });
+                    invoice.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'custcol_ps_agreement_type',
+                        value: lineData.agreementType,
+                    });
+                    var currentUsageRate = parseFloat(result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }));
+                    var currentLineAmount = parseFloat(currentUsageRate || 0) * qtyCalculation;
                     if (currentUsageRate) {
                         invoice.setCurrentSublistValue({
                             sublistId: 'item',
                             fieldId: 'rate',
                             value: currentUsageRate, //.toFixed(2),
                         });
-
                         invoice.setCurrentSublistValue({
                             sublistId: 'item',
                             fieldId: 'amount',
                             value: currentLineAmount,
                         });
+                        invoice.commitLine({
+                            sublistId: 'item'
+                        });
                     }
-                    if (lineData.requiredMinimum && parseFloat(lineData.requiredMinimum || 0) > 0) {
-                        if (currentLineAmount < parseFloat(lineData.requiredMinimum)) {
-                            invoice.setCurrentSublistValue({
-                                sublistId: 'item',
-                                fieldId: 'amount',
-                                value: lineData.requiredMinimum,
-                            });
-                        }
-                    }
-                    invoice.commitLine({
-                        sublistId: 'item'
-                    });
                 }
-            }
-
+                return true;
+            });
             return invoice;
         }
         function getUsageQty(agreementDetailid, itemId, startDate, endDate) {
@@ -731,7 +845,9 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                         "AND",
                         ["custrecord_ps_au_item", "anyof", itemId],
                         "AND",
-                        ["custrecord_ps_au_usage_date", "within", startDate, endDate]
+                        ["custrecord_ps_au_usage_date", "within", startDate, endDate],
+                        "AND",
+                        ["custrecord_ps_au_is_billed", "is", "F"]
                     ],
                 columns:
                     [
@@ -751,18 +867,8 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                 rate: 0,
                 amount: 0
             };
-            var lookResults = search.lookupFields({
-                type: 'customrecord_ps_agreement_pricing',
-                id: priceLevel,
-                columns: ['custrecord_ps_req_agreement_pricing_type']
-            });
-            log.debug({ title: "Lookup Price Type val", details: lookResults.custrecord_ps_req_agreement_pricing_type });
-            if (lookResults.custrecord_ps_req_agreement_pricing_type &&
-                lookResults.custrecord_ps_req_agreement_pricing_type.length > 0) {
-                priceType = lookResults.custrecord_ps_req_agreement_pricing_type;
-            }
             log.debug({ title: "PriceLevel | Billing Freq | Qty | PriceType", details: priceLevel + " | " + billingFreq + " | " + qty + " | " + priceType });
-            if (isEmpty(priceType) || priceType == "2" || priceType == "3") {// Max Volume
+            if (isEmpty(priceType) || priceType == "2") {// Max Volume
                 var maxVolPricingSearch = search.create({
                     type: "customrecord_ps_agreement_pricing_detail",
                     filters:
@@ -782,14 +888,14 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                             search.createColumn({ name: "custrecord_ps_ap_min_qty", label: "Min Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_billing_frequency", label: "Billing Frequency" }),
-                            search.createColumn({ name: "custrecord_ps_ap_rate", label: "Rate" }),
+                            search.createColumn({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
                             search.createColumn({ name: "custrecord_ps_req_agreement_pricing_type", join: "CUSTRECORD_PS_AP_AGREEMENT_PRICING", label: "Require Agreement Pricing Type" })
                         ]
                 });
                 maxVolPricingSearch.run().each(function (result) {
                     response = {
-                        rate: result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" }),
-                        amount: parseFloat(result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" })) * qty
+                        rate: result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
+                        amount: parseFloat(result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" })) * qty
                     };
                     return true;
                 });
@@ -814,14 +920,14 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                             search.createColumn({ name: "custrecord_ps_ap_min_qty", label: "Min Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_billing_frequency", label: "Billing Frequency" }),
-                            search.createColumn({ name: "custrecord_ps_ap_rate", label: "Rate" }),
+                            search.createColumn({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
                             search.createColumn({ name: "custrecord_ps_req_agreement_pricing_type", join: "CUSTRECORD_PS_AP_AGREEMENT_PRICING", label: "Require Agreement Pricing Type" })
                         ]
                 });
                 flatRatePricingSearch.run().each(function (result) {
                     response = {
-                        rate: result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" }),
-                        amount: parseFloat(result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" }))
+                        rate: result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
+                        amount: parseFloat(result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }))
                     };
                     return true;
                 });
@@ -842,7 +948,7 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                             search.createColumn({ name: "custrecord_ps_ap_min_qty", sort: search.Sort.ASC, label: "Min Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }),
                             search.createColumn({ name: "custrecord_ps_ap_billing_frequency", label: "Billing Frequency" }),
-                            search.createColumn({ name: "custrecord_ps_ap_rate", label: "Rate" }),
+                            search.createColumn({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }),
                             search.createColumn({ name: "custrecord_ps_req_agreement_pricing_type", join: "CUSTRECORD_PS_AP_AGREEMENT_PRICING", label: "Require Agreement Pricing Type" })
                         ]
                 });
@@ -854,11 +960,11 @@ define(['N/log', 'N/search', 'N/record', './moment.min.js', 'N/format', 'N/runti
                     maxQty = parseFloat(result.getValue({ name: "custrecord_ps_ap_max_qty", label: "Max Qty" }));
                     if (minQty <= qty) {
                         if (maxQty <= qty) {
-                            response.rate = parseFloat(result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" }));
+                            response.rate = parseFloat(result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }));
                             response.amount = response.amount + (maxQty * response.rate);
                         }
                         else {
-                            response.rate = parseFloat(result.getValue({ name: "custrecord_ps_ap_rate", label: "Rate" }));
+                            response.rate = parseFloat(result.getValue({ name: "custrecord_ps_ap_usage_rate", label: "Rate" }));
                             qtyCalculation = qty - (minQty - 1);
                             response.amount = response.amount + (qtyCalculation * response.rate);
                         }

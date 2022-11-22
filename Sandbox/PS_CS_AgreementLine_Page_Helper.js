@@ -104,10 +104,59 @@ define(['N/error', 'N/log', 'N/search', './moment.min.js','N/https'],
             }
             return response;
         }
+        function getLineUsage(param){
+            var usageResult = [];
+            if(param){
+                if(param.lineId){
+                    var filters = [];
+                    filters.push(["custrecord_ps_au_agreement_detail","anyof", param.lineId]);
+                    if(!isEmpty(param.fromDate)){
+                        filters.push("AND");
+                        filters.push(["custrecord_ps_au_usage_date","onorafter", param.fromDate]);
+                    }
+                    if(!isEmpty(param.toDate)){
+                        filters.push("AND");
+                        filters.push(["custrecord_ps_au_usage_date","onorbefore", param.toDate]);
+                    }
+                    var lineUsageDrch = search.create({
+                        type: "customrecord_ps_agreement_usage",
+                        filters: filters,
+                        columns:
+                        [
+                        search.createColumn({name: "internalid", sort: search.Sort.DESC, label: "Internal ID"}),
+                        search.createColumn({name: "custrecord_ps_au_usage_date", label: "Usage Date"}),
+                        search.createColumn({name: "custrecord_ps_au_item", label: "Item"}),
+                        search.createColumn({name: "custrecord_ps_au_usage_qty", label: "Usage Quantity"}),
+                        search.createColumn({name: "custrecord_ps_au_agreement_detail", label: "Agreement Detail"}),
+                        search.createColumn({name: "custrecord_ps_au_demo", label: "Memo"}),
+                        search.createColumn({name: "custrecord_ps_au_is_billed", label: "Is Billed"})
+                        ]
+                    });
+                    lineUsageDrch.run().each(function(result){
+                        usageResult.push({
+                            id: result.getValue({name: "internalid", sort: search.Sort.DESC, label: "Internal ID"}),
+                            usageDate: result.getValue({name: "custrecord_ps_au_usage_date", label: "Usage Date"}),
+                            usageItem: result.getText({name: "custrecord_ps_au_item", label: "Item"}),
+                            usageQty: result.getValue({name: "custrecord_ps_au_usage_qty", label: "Usage Quantity"}),
+                            agreementLineId : result.getValue({name: "custrecord_ps_au_agreement_detail", label: "Agreement Detail"}),
+                            memo: result.getValue({name: "custrecord_ps_au_demo", label: "Memo"}),
+                            isBilled : result.getValue({name: "custrecord_ps_au_is_billed", label: "Is Billed"}),
+                        });
+                        return true;
+                    });
+                }
+            }
+            return JSON.stringify(usageResult);
+        }
+        function isEmpty(value) {
+            if (value == "Invalid date"|| value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
+            return false;
+        }
 
         return {
             pageInit: pageInit,
             getGroupItemMembers: getGroupItemMembers,
-            sendAPICall: sendAPICall
+            sendAPICall: sendAPICall,
+            getLineUsage: getLineUsage
         };
     });

@@ -131,13 +131,20 @@
                  * Fields To Store Data
                  **********************/
                  if (isErrorPage == false) {
+                    //  form.addField({
+                    //      id: 'custpage_customer_list',
+                    //      type: serverWidget.FieldType.LONGTEXT,
+                    //      label: 'Customer List'
+                    //  }).updateDisplayType({
+                    //      displayType: serverWidget.FieldDisplayType.HIDDEN
+                    //  }).defaultValue = [];//getCustomers();
                      form.addField({
-                         id: 'custpage_customer_list',
-                         type: serverWidget.FieldType.LONGTEXT,
-                         label: 'Customer List'
-                     }).updateDisplayType({
-                         displayType: serverWidget.FieldDisplayType.HIDDEN
-                     }).defaultValue = getCustomers();
+                        id: 'custpage_customer_list',
+                        type: serverWidget.FieldType.INLINEHTML,
+                        label: 'Customer List'
+                    }).updateDisplayType({
+                        displayType: serverWidget.FieldDisplayType.HIDDEN
+                    }).defaultValue = getCustomers();
                      form.addField({
                          id: 'custpage_subsidiary_list',
                          type: serverWidget.FieldType.LONGTEXT,
@@ -291,25 +298,45 @@
              type: "customer",
              filters:
                  [
-                     ["isinactive", "is", "F"]
+                    ["isinactive", "is", "F"], 
+                    "AND", 
+                    ["stage","anyof","CUSTOMER"]
                  ],
              columns:
                  [
                      search.createColumn({ name: "internalid", label: "Internal ID" }),
-                     search.createColumn({ name: "entityid", sort: search.Sort.ASC, label: "Name" }),
+                     //search.createColumn({ name: "altname", sort: search.Sort.ASC, label: "Name"}),
+                     search.createColumn({ name: "entityid", sort: search.Sort.ASC, label: "Name Id" }),
                      search.createColumn({ name: "subsidiarynohierarchy", label: "Primary Subsidiary (no hierarchy)" })
                  ]
          });
-         var id, name, subsidiary;
-         customerSrch.run().each(function (result) {
-             id = result.getValue({ name: "internalid", label: "Internal ID" });
-             name = result.getValue({ name: "entityid", sort: search.Sort.ASC, label: "Name" });
-             subsidiary = result.getValue({ name: "subsidiarynohierarchy", label: "Primary Subsidiary (no hierarchy)" });
-             optionString = optionString + "<option value='" + id + "' data-subsidiary=" + subsidiary + ">"
-             optionString = optionString + name + "</option>"
-             return true;
-         });
-         return optionString;
+         var id, nameId, name, subsidiary;
+         var customerSrchResultSet = customerSrch.run()
+         var currentRange = customerSrchResultSet.getRange({
+            start : 0,
+            end : 1000
+        });
+        var i = 0;
+        var j = 0;
+        var result;
+        while ( j < currentRange.length ) {
+            result = currentRange[j];
+            id = result.getValue({ name: "internalid", label: "Internal ID" });
+            name = "";//result.getValue({ name: "altname", sort: search.Sort.ASC, label: "Name"});
+            nameId = result.getValue({ name: "entityid", sort: search.Sort.ASC, label: "Name Id" });
+            subsidiary = result.getValue({ name: "subsidiarynohierarchy", label: "Primary Subsidiary (no hierarchy)" });
+            optionString = optionString + "<option value='" + id + "' data-subsidiary=" + subsidiary + ">"
+            optionString = optionString + nameId +" "+name + "</option>";
+            i++; j++;
+            if( j == 1000 ) {
+                j = 0;   
+                currentRange = customerSrchResultSet.getRange({
+                    start : i,
+                    end : i + 1000
+                });
+            }
+        }
+        return optionString;
      }
      function getSubsidiaries() {
          var optionString = "<option value=''></option>";

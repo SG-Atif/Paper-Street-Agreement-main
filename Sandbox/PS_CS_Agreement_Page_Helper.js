@@ -69,7 +69,7 @@ define(['N/error', 'N/log', 'N/search', './moment.min.js', 'N/https', 'N/url'],
                     [
                         search.createColumn({ name: "memberitem", label: "Member Item" }),
                         search.createColumn({ name: "memberquantity", label: "Member Quantity" }),
-                        search.createColumn({ name: "salesdescriptiontranslated", join: "memberItem", label: "Sales Description (Translated)" }),
+                        search.createColumn({ name: "salesdescription", join: "memberItem", label: "Sales Description (Translated)" }),
                         search.createColumn({ name: "baseprice", join: "memberItem", label: "Base Price" })
                     ]
             });
@@ -78,7 +78,7 @@ define(['N/error', 'N/log', 'N/search', './moment.min.js', 'N/https', 'N/url'],
                     id: result.getValue({ name: "memberitem", label: "Member Item" }),
                     name: result.getText({ name: "memberitem", label: "Member Item" }),
                     qty: result.getValue({ name: "memberquantity", label: "Member Quantity" }),
-                    description: result.getValue({ name: "salesdescriptiontranslated", join: "memberItem", label: "Sales Description (Translated)" }),
+                    description: result.getValue({ name: "salesdescription", join: "memberItem", label: "Sales Description (Translated)" }),
                     rate: result.getValue({ name: "baseprice", join: "memberItem", label: "Base Price" }),
 
                 });

@@ -275,7 +275,8 @@
 		.select2-selection {
 			min-height: 34px !important;
 		}
-		.select2-selection__rendered{
+
+		.select2-selection__rendered {
 			color: #555 !important;
 			padding-top: 2px !important;
 		}
@@ -309,8 +310,10 @@
 					Agreement Detail Line <span id="agreement_line_id"></span></h2>
 			</div>
 			<div class="col-md-8" style="margin-left: 33px;">
-				<input type="button" class="btn btn-primary" id="btn_agreement_edit" value="Edit" style="min-width: 120px;background: #24385b;">
-				<input type="button" class="btn btn-primary" id="btn_agreement_save" value="Save" style="min-width: 120px;background: #24385b;">
+				<input type="button" class="btn btn-primary" id="btn_agreement_edit" value="Edit"
+					style="min-width: 120px;background: #24385b;">
+				<input type="button" class="btn btn-primary" id="btn_agreement_save" value="Save"
+					style="min-width: 120px;background: #24385b;">
 			</div>
 		</div>
 		<div>
@@ -340,16 +343,14 @@
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
-								<label for="txt_line_qty">Quantity:<span
-										style="color: #d41111;">*</span></label>
+								<label for="txt_line_qty">Quantity:<span style="color: #d41111;">*</span></label>
 								<input type="number" class="form-control required" id="txt_line_qty" required />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
 								<label for="txt_line_rate">Rate:<span style="color: #d41111;">*</span></label>
-								<input type="number" class="form-control required" id="txt_line_rate"
-									required />
+								<input type="number" class="form-control required" id="txt_line_rate" required />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
@@ -369,30 +370,27 @@
 							<div class="col-md-9 col-sm-10">
 								<label for="dd_line_billingFreq">Billing Frequency:<span
 										style="color: #d41111;">*</span></label>
-								<select class="form-control required" id="dd_line_billingFreq"
-									required></select>
+								<select class="form-control required" id="dd_line_billingFreq" required></select>
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
 								<label for="txt_line_start_date">Start Date:<span
 										style="color: #d41111;">*</span></label>
-								<input type="date" class="form-control required" id="txt_line_start_date"
-									required />
+								<input type="date" class="form-control required" id="txt_line_start_date" required />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
-								<label for="txt_line_end_date">End Date:<span
-										style="color: #d41111;">*</span></label>
-								<input type="date" class="form-control required" id="txt_line_end_date"
-									required />
+								<label for="txt_line_end_date">End Date:<span style="color: #d41111;">*</span></label>
+								<input type="date" class="form-control required" id="txt_line_end_date" required />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
 								<label for="txt_line_nextbill_date">Next Billing Date:</label>
-								<input type="date" class="form-control" id="txt_line_nextbill_date" disabled="disabled" />
+								<input type="date" class="form-control" id="txt_line_nextbill_date"
+									disabled="disabled" />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
@@ -404,7 +402,8 @@
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
 							<div class="col-md-9 col-sm-10">
 								<label for="txt_line_lastbill_date">Last Billing Date:</label>
-								<input type="date" class="form-control" id="txt_line_lastbill_date" disabled="disabled" />
+								<input type="date" class="form-control" id="txt_line_lastbill_date"
+									disabled="disabled" />
 							</div>
 						</div>
 						<div class="form-group col-md-4 col-sm-6 col-12" style="height:56px">
@@ -457,17 +456,20 @@
 					</div>
 				</div>
 			</form>
-			<form> <!-- class="hide" -->
+			<form>
+				<!-- class="hide" -->
 				<div class="col-md-12 related_tabs">
 					<div class="x_content">
 						<ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
 							<li class="nav-item active">
-								<a class="nav-link" id="unbilledUsageLines-tab" data-toggle="tab" href="#unbilledUsageLines"
-									role="tab" aria-controls="unbilledUsageLines" aria-selected="true">Unbilled Usage Lines</a>
+								<a class="nav-link" id="unbilledUsageLines-tab" data-toggle="tab"
+									href="#unbilledUsageLines" role="tab" aria-controls="unbilledUsageLines"
+									aria-selected="true">Unbilled Usage Lines</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" id="billedUsageLines-tab" data-toggle="tab" href="#billedUsageLines" role="tab"
-									aria-controls="billedUsageLines" aria-selected="false">Billed Usage Lines</a>
+								<a class="nav-link" id="billedUsageLines-tab" data-toggle="tab" href="#billedUsageLines"
+									role="tab" aria-controls="billedUsageLines" aria-selected="false">Billed Usage
+									Lines</a>
 							</li>
 						</ul>
 						<div class="tab-content" id="agreementLineContent">
@@ -477,17 +479,26 @@
 									<div class="table-wrapper">
 										<div class="table-title">
 											<div class="row">
-												<div class="col-sm-8">
-													<h2>Agreement Unbilled Usage</h2>
+												<div class="col-sm-12">
+													<h2>Agreement Unbilled Usage</h2><br/>
 												</div>
-												<div class="col-sm-4" style="text-align: right;">
+												<div class="form-group col-md-3 col-sm-6 col-12" style="height:56px">
+													<div class="col-md-9 col-sm-10">
+														<label for="txt_unbilledusage_from_date">From Date:</label>
+														<input type="date" class="form-control" id="txt_unbilledusage_from_date">
+													</div>
+												</div>
+												<div class="form-group col-md-3 col-sm-6 col-12" style="height:56px">
+													<div class="col-md-9 col-sm-10">
+														<label for="txt_unbilledusage_to_date">To Date:</label>
+														<input type="date" class="form-control" id="txt_unbilledusage_to_date" >
+													</div>
 												</div>
 											</div>
 										</div>
 										<table class="table table-bordered" id="tbl_agreement_usage_unbilled">
 											<thead>
 												<tr>
-													<th class="col-md-1">Actions</th>
 													<th>Usage Date</th>
 													<th>Item</th>
 													<th>Usage Quantity</th>
@@ -506,17 +517,14 @@
 									<div class="table-wrapper">
 										<div class="table-title">
 											<div class="row">
-												<div class="col-sm-8">
-													<h2>Agreement Billed Usage</h2>
-												</div>
-												<div class="col-sm-4">
+												<div class="col-sm-6">
+													<h2>Agreement Billed Usage</h2><br/>
 												</div>
 											</div>
 										</div>
 										<table class="table table-bordered" id="tbl_agreement_usage_billed">
 											<thead>
 												<tr>
-													<th class="col-md-1">Actions</th>
 													<th>Usage Date</th>
 													<th>Item</th>
 													<th>Usage Quantity</th>
@@ -536,7 +544,7 @@
 		</div>
 	</div>
 	<script>
-		var csScriptUrl = '/SuiteScripts/SG Scripts/PS Agreement/PS_CS_AgreementLine_Page_Helper';
+		var csScriptUrl = '/SuiteBundles/Bundle 443331/PS_CS_AgreementLine_Page_Helper';
 		var pageLoaderURL;
 		var usageLines = [];
 		var agreementId;
@@ -545,29 +553,56 @@
 		var cancellationSuiteletUrl;
 		var suiteletUrl;
 		var agreementLineId;
+		var csScriptUrl = '/SuiteBundles/Bundle 443331/PS_CS_AgreementLine_Page_Helper';
 		$(document).ready(function () {
+			if (parent.window.location.host == 'tstdrv2175778.app.netsuite.com') {
+				csScriptUrl = '/SuiteScripts/SG Scripts/PS Agreement/PS_CS_AgreementLine_Page_Helper';
+			}
 			onLoad();
+			$("#txt_unbilledusage_from_date, #txt_unbilledusage_to_date").on("change", function(){
+				debugger;
+				var param = {
+					lineId : agreementLineId,
+					fromDate : moment($("#txt_unbilledusage_from_date").val()).format(parent.custpage_pref_date_format.value),
+					toDate :  moment($("#txt_unbilledusage_to_date").val()).format(parent.custpage_pref_date_format.value),
+				}
+				if(param.lineId){
+					var entryPointRequire = getClinetConfig();
+					entryPointRequire([csScriptUrl], function (mod) {
+						try {
+							var usageLinesResults = mod.getLineUsage(param);
+							if(usageLinesResults){
+								usageLinesResults = JSON.parse(usageLinesResults);
+								populateUnBilledUsageLines(usageLinesResults);
+							}
+						}
+						catch(exp){
+							console.log(exp);
+						}
+					});
+				}
+			});
 			$("#dd_line_items").on("change", function () {
 				var agreementType = $("#dd_line_items option:selected").data("agreementtype");
 				if (agreementType) {
 					$("#dd_line_agreement_type").val(agreementType);
 				}
 			});
-			$("#txt_line_qty, #txt_line_rate").on("change", function(){
-				var qty = parseFloat($("#txt_line_qty").val()||0);
-				var rate = parseFloat($("#txt_line_rate").val()||0);
-				$("#txt_line_amount").val(qty*rate);
+			$("#txt_line_qty, #txt_line_rate").on("change", function () {
+				var qty = parseFloat($("#txt_line_qty").val() || 0);
+				var rate = parseFloat($("#txt_line_rate").val() || 0);
+				$("#txt_line_amount").val(qty * rate);
 			});
-			$("#dd_line_agreement").on("change", function(){
-				if(isEmpty($(this).val())){
+			$("#dd_line_agreement").on("change", function () {
+				if (isEmpty($(this).val())) {
 					$("#dd_line_items").attr("disabled", "disabled");
 				}
-				else{
+				else {
 					agreementId = $(this).val();
 					$("#dd_line_items").select2('destroy');
 					$("#dd_line_items").html(parent.custpage_line_items.value);
 					$("#dd_line_items").removeAttr("disabled", "disabled");
-					subsidiaryId = $("#dd_line_agreement").select2().find(":selected").data("subsdiary"); 
+					subsidiaryId = $("#dd_line_agreement").select2().find(":selected").data("subsdiary");
 					fitleritemDropdown(subsidiaryId);
 					$("#dd_line_items").select2({
 						width: 'resolve',
@@ -575,20 +610,20 @@
 					});
 				}
 			});
-			$("#btn_agreement_edit").on("click", function(){
-				var url =  suiteletUrl+ "&lineId="+agreementLineId+"&context=edit";
+			$("#btn_agreement_edit").on("click", function () {
+				var url = suiteletUrl + "&lineId=" + agreementLineId + "&context=edit";
 				parent.window.location.href = url;
 			});
-			$(document).on("click", "#btn_agreement_save", function(){
+			$(document).on("click", "#btn_agreement_save", function () {
 				var isValid = checkRequiredFields("#form_header_flds");
-				if(isValid == false){
+				if (isValid == false) {
 					$("#errorMappingModal .modal-body > p").html("Please enter required header fields.");
 					$("#errorMappingModal").modal("show");
 				}
 				else {
 					var lines = [];
 					var lineDetail = {
-						"id" : $("#txt_line_id").val(),
+						"id": $("#txt_line_id").val(),
 						"agreement": agreementId,
 						"itemId": $("#dd_line_items option:selected").val(),
 						"item": $("#dd_line_items option:selected").text(),
@@ -622,77 +657,77 @@
 					var entryPointRequire = getClinetConfig();
 					togglePageLoader(true);
 					window.setTimeout(function () {
-							entryPointRequire([csScriptUrl], function (mod) {
-								try {
-									groupMembers = mod.getGroupItemMembers($("#dd_line_items option:selected").val());
-									if (groupMembers && groupMembers.length > 0) {
-										for (var m = 0; m < groupMembers.length; m++) {
-											var newMemberLine = {
-												"agreement": agreementId,
-												"itemId": groupMembers[m].id,
-												"item": groupMembers[m].name,
-												"itemType": $("#dd_line_items").select2().find(":selected").data("type"),
-												"quantity": parseFloat($("#txt_line_qty").val()) * (groupMembers[m].qty),
-												"rate": groupMembers[m].rate,
-												"priceLevel": $("#dd_line_pricelevel option:selected").text(),
-												"billingFrequency": $("#dd_line_billingFreq option:selected").text(),
-												"createdFromTransactionId": $("#dd_line_createdfrom option:selected").val(),
-												"transactionLineUniqueKey": $("#txt_line_tranlinekey").val(),
-												"agreementPricingType": $("#dd_line_pricingtype option:selected").text(),
-												"agreementLineType": $("#dd_line_agreement_type option:selected").text(),
-												"requiredMinimum": $("#txt_line_req_min").val(),
-												"isClosed": false,
-												"status": $("#dd_line_status option:selected").text(),
-												"usageGroup": $("#dd_line_usagegroup option:selected").text(),
-												"startDate": moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value),
-												"endDate": moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value),
-												"nextBillingDate": moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value),
-												"lastBillingDate": moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value),
-												"nextRenewalDate": moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value),
-											};
-											lines.push(newMemberLine);
-										}
-									}
-									else {
-										lines.push(lineDetail);
-									}
-									requestParam = {
-										"method": "CreateOrUpdateAgreementLines",
-										"data": lines
-									}
-									console.log(requestParam);
-									if (requestParam.data && requestParam.data.length > 0) {
-										response = mod.sendAPICall(requestParam, parent.custpage_api_url.value, "POST");
-										if(response){
-											response = JSON.parse(JSON.parse(response));
-											console.log(response);
-											if(response.success.length > 0){
-												console.log(response.success.length +" ||| "+ requestParam.data.length);
-												if(response.success.length == requestParam.data.length){
-													parent.window.location.href = agreementSuiteletUrl+"&agreementId="+agreementId+"&context=view";
-												}
-											}
-											else if(response.fail.length > 0){
-												$("#errorMappingModal .modal-body > p").html(response.fail[0].message);
-												$("#errorMappingModal").modal("show");
-											}
-										}
-										togglePageLoader(false);
-									}
-									else {
-										togglePageLoader(false);
+						entryPointRequire([csScriptUrl], function (mod) {
+							try {
+								groupMembers = mod.getGroupItemMembers($("#dd_line_items option:selected").val());
+								if (groupMembers && groupMembers.length > 0) {
+									for (var m = 0; m < groupMembers.length; m++) {
+										var newMemberLine = {
+											"agreement": agreementId,
+											"itemId": groupMembers[m].id,
+											"item": groupMembers[m].name,
+											"itemType": $("#dd_line_items").select2().find(":selected").data("type"),
+											"quantity": parseFloat($("#txt_line_qty").val()) * (groupMembers[m].qty),
+											"rate": groupMembers[m].rate,
+											"priceLevel": $("#dd_line_pricelevel option:selected").text(),
+											"billingFrequency": $("#dd_line_billingFreq option:selected").text(),
+											"createdFromTransactionId": $("#dd_line_createdfrom option:selected").val(),
+											"transactionLineUniqueKey": $("#txt_line_tranlinekey").val(),
+											"agreementPricingType": $("#dd_line_pricingtype option:selected").text(),
+											"agreementLineType": $("#dd_line_agreement_type option:selected").text(),
+											"requiredMinimum": $("#txt_line_req_min").val(),
+											"isClosed": false,
+											"status": $("#dd_line_status option:selected").text(),
+											"usageGroup": $("#dd_line_usagegroup option:selected").text(),
+											"startDate": moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value),
+											"endDate": moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value),
+											"nextBillingDate": moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value),
+											"lastBillingDate": moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value),
+											"nextRenewalDate": moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value),
+										};
+										lines.push(newMemberLine);
 									}
 								}
-								catch (exp) {
+								else {
+									lines.push(lineDetail);
+								}
+								requestParam = {
+									"method": "CreateOrUpdateAgreementLines",
+									"data": lines
+								}
+								console.log(requestParam);
+								if (requestParam.data && requestParam.data.length > 0) {
+									response = mod.sendAPICall(requestParam, parent.custpage_api_url.value, "POST");
+									if (response) {
+										response = JSON.parse(JSON.parse(response));
+										console.log(response);
+										if (response.success.length > 0) {
+											console.log(response.success.length + " ||| " + requestParam.data.length);
+											if (response.success.length == requestParam.data.length) {
+												parent.window.location.href = agreementSuiteletUrl + "&agreementId=" + agreementId + "&context=view";
+											}
+										}
+										else if (response.fail.length > 0) {
+											$("#errorMappingModal .modal-body > p").html(response.fail[0].message);
+											$("#errorMappingModal").modal("show");
+										}
+									}
 									togglePageLoader(false);
-									console.log(exp);
 								}
-							});
-						}, 500);
+								else {
+									togglePageLoader(false);
+								}
+							}
+							catch (exp) {
+								togglePageLoader(false);
+								console.log(exp);
+							}
+						});
+					}, 500);
 				}
 			});
 		});
-		function onLoad(){
+		function onLoad() {
 			context = parent.custpage_context.value;
 			agreementSuiteletUrl = parent.custpage_agreement_suitelet_url.value;
 			agreementId = "";
@@ -711,10 +746,10 @@
 				agreementLineDetails = JSON.parse(agreementLineDetails);
 				agreementId = agreementLineDetails.agreementId;
 				agreementLineId = agreementLineDetails.id;
-				subsidiaryId = agreementLineDetails.subsidiary; 
+				subsidiaryId = agreementLineDetails.subsidiary;
 				fitleritemDropdown(subsidiaryId);
 				$("#agreement_line_id").html(agreementLineId);
-				if(!isEmpty(agreementId)){
+				if (!isEmpty(agreementId)) {
 					$("#dd_line_agreement").attr("disabled", "disbaled");
 				}
 				$("#dd_line_agreement").val(agreementId);
@@ -725,7 +760,7 @@
 				$("#txt_line_amount").val(agreementLineDetails.amount);
 				$("#dd_line_pricelevel").val(agreementLineDetails.priceLevelId);
 				$("#txt_line_start_date").val(isEmpty(agreementLineDetails.startDate) ? "" : moment(agreementLineDetails.startDate).format('YYYY-MM-DD'));
-				$("#txt_line_end_date").val(isEmpty(agreementLineDetails.endDate) ?  "" : moment(agreementLineDetails.endDate).format('YYYY-MM-DD'));
+				$("#txt_line_end_date").val(isEmpty(agreementLineDetails.endDate) ? "" : moment(agreementLineDetails.endDate).format('YYYY-MM-DD'));
 				$("#txt_line_nextbill_date").val(isEmpty(agreementLineDetails.nextBillingDate) ? "" : moment(agreementLineDetails.nextBillingDate).format('YYYY-MM-DD'));
 				$("#txt_line_renewal_date").val(isEmpty(agreementLineDetails.renewalDate) ? "" : moment(agreementLineDetails.renewalDate).format('YYYY-MM-DD'));
 				$("#txt_line_lastbill_date").val(isEmpty(agreementLineDetails.lastBillingDate) ? "" : moment(agreementLineDetails.lastBillingDate).format('YYYY-MM-DD'));
@@ -738,10 +773,10 @@
 				setDropDownValueByText("#dd_line_status", isEmpty(agreementLineDetails.status) ? "" : agreementLineDetails.status);
 				setDropDownValueByText("#dd_line_billingFreq", isEmpty(agreementLineDetails.billingFrequency) ? "" : agreementLineDetails.billingFrequency);
 			}
-			if($("#dd_line_agreement_type option:selected").text() == "Usage"){
+			if ($("#dd_line_agreement_type option:selected").text() == "Usage") {
 				$(".related_tabs").show();
 			}
-			else{
+			else {
 				$(".related_tabs").hide();
 			}
 			$("#dd_line_pricelevel, #dd_line_items, #dd_line_agreement").select2({
@@ -749,15 +784,15 @@
 				dropdownParent: $("#form_header_flds")
 			});
 			resizeIframe();
-			if(isEmpty($("#dd_line_agreement").val())){
+			if (isEmpty($("#dd_line_agreement").val())) {
 				$("#dd_line_items").attr('disabled', 'disabled');
 			}
-			if(context == "view"){
+			if (context == "view") {
 				disableAllControls("#form_header_flds");
 				$("#btn_agreement_save").hide();
 				$("#btn_agreement_edit").show();
 			}
-			else if(context == "edit" || context == "create"){
+			else if (context == "edit" || context == "create") {
 				$("#btn_agreement_edit").hide();
 				$("#btn_agreement_save").show();
 			}
@@ -802,10 +837,10 @@
 		}
 		function resizeIframe() {
 			var iframe = parent.document.getElementById("agreement");
-			if(isEmpty(usageLines)){
+			if (isEmpty(usageLines)) {
 				$(iframe).css("min-height", parent.document.body.clientHeight + "px");
 			}
-			else{
+			else {
 				iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
 			}
 		}
@@ -821,39 +856,39 @@
 			});
 			return isValid;
 		}
-		function validateLineDate(){
+		function validateLineDate() {
 			var result = {
-				isValid : true,
-				message : ""
+				isValid: true,
+				message: ""
 			}
 			var startDate = moment($("#txt_line_start_date").val()).format(parent.custpage_pref_date_format.value);
 			var endDate = moment($("#txt_line_end_date").val()).format(parent.custpage_pref_date_format.value);
 			var nextBillingDate = moment($("#txt_line_nextbill_date").val()).format(parent.custpage_pref_date_format.value);
 			var lastBillingDate = moment($("#txt_line_lastbill_date").val()).format(parent.custpage_pref_date_format.value);
 			var nextRenewalDate = moment($("#txt_line_renewal_date").val()).format(parent.custpage_pref_date_format.value);
-			if(startDate && endDate){
-				if(moment(startDate).isAfter(endDate)){
+			if (startDate && endDate) {
+				if (moment(startDate).isAfter(endDate)) {
 					result = {
-						isValid : false,
-						message : "Start date should be before the end date."
+						isValid: false,
+						message: "Start date should be before the end date."
 					}
 					return result;
 				}
 			}
-			if(nextRenewalDate && endDate){
-				if(moment(nextRenewalDate).isBefore(endDate)){
+			if (nextRenewalDate && endDate) {
+				if (moment(nextRenewalDate).isBefore(endDate)) {
 					result = {
-						isValid : false,
-						message : "Next Renewal date should be after the end date."
+						isValid: false,
+						message: "Next Renewal date should be after the end date."
 					}
 					return result;
 				}
 			}
-			if(nextBillingDate && startDate){
-				if(moment(nextBillingDate).isBefore(startDate)){
+			if (nextBillingDate && startDate) {
+				if (moment(nextBillingDate).isBefore(startDate)) {
 					result = {
-						isValid : false,
-						message : "Next billing date should be after the start date."
+						isValid: false,
+						message: "Next billing date should be after the start date."
 					}
 					return result;
 				}
@@ -883,18 +918,18 @@
 			}
 		}
 		function isEmpty(value) {
-            if (value == "Invalid date" || value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
-            return false;
-        }
-		function setDropDownValueByText(elem, valueText){
-			$(elem).find("option").each(function() {
-				if($(this).text() == valueText) {
-					$(this).attr('selected', 'selected');            
-				}                        
+			if (value == "Invalid date" || value == null || value == NaN || value == 'null' || value == undefined || value == 'undefined' || value == '' || value == "" || value.length <= 0) { return true; }
+			return false;
+		}
+		function setDropDownValueByText(elem, valueText) {
+			$(elem).find("option").each(function () {
+				if ($(this).text() == valueText) {
+					$(this).attr('selected', 'selected');
+				}
 			});
 		}
-		function fitleritemDropdown(subsidiaryId){
-			if(subsidiaryId){
+		function fitleritemDropdown(subsidiaryId) {
+			if (subsidiaryId) {
 				$("#dd_line_items").find("option").each(function () {
 					currentOptionSubsidiary = $(this).data("subsidiary");
 					if (currentOptionSubsidiary != subsidiaryId && $(this).val() != "") {
@@ -904,22 +939,18 @@
 			}
 		}
 		function populateBilledUsageLines(lines) {
+			$('#tbl_agreement_usage_billed > tbody').html("");
 			if (lines && lines.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < lines.length; t++) {
 					rowHtml = "";
-					if(lines[t].isBilled == true){
-						rowHtml = '<td>\
-								<a data-id="'+lines[t].id+'" data-recordtype="customrecord_ps_agreement_usage" class="new usage_line_view" title="View" \
-									data-toggle="tooltip"><i class="material-icons">remove_red_eye</i>\
-								</a>\
-							</td>\
-							<td>'+ lines[t].usageDate + '</td>\
+					if (lines[t].isBilled == true) {
+						rowHtml = '<td>'+ lines[t].usageDate + '</td>\
 							<td>'+ lines[t].usageItem + '</td>\
 							<td>'+ lines[t].usageQty + '</td>\
 							<td>'+ lines[t].memo + '</td>';
 					}
-					if(rowHtml != ""){
+					if (rowHtml != "") {
 						$('#tbl_agreement_usage_billed > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
 					}
 					resizeIframe();
@@ -927,22 +958,18 @@
 			}
 		}
 		function populateUnBilledUsageLines(lines) {
+			$('#tbl_agreement_usage_unbilled > tbody').html("");
 			if (lines && lines.length > 0) {
 				var rowHtml = "";
 				for (var t = 0; t < lines.length; t++) {
 					rowHtml = "";
-					if(lines[t].isBilled == false){
-						rowHtml = '<td>\
-								<a data-id="'+lines[t].id+'" data-recordtype="customrecord_ps_agreement_usage" class="new usage_line_view" title="View" \
-									data-toggle="tooltip"><i class="material-icons">remove_red_eye</i>\
-								</a>\
-							</td>\
-							<td>'+ lines[t].usageDate + '</td>\
+					if (lines[t].isBilled == false) {
+						rowHtml = '<td>'+ lines[t].usageDate + '</td>\
 							<td>'+ lines[t].usageItem + '</td>\
 							<td>'+ lines[t].usageQty + '</td>\
 							<td>'+ lines[t].memo + '</td>';
 					}
-					if(rowHtml != ""){
+					if (rowHtml != "") {
 						$('#tbl_agreement_usage_unbilled > tbody:last-child').append('<tr>' + rowHtml + '</tr>');
 					}
 					resizeIframe();

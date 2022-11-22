@@ -582,7 +582,9 @@ define(['N/ui/serverWidget', 'N/log', 'N/search', 'N/record', 'N/format', 'N/red
                 type: "customrecord_ps_agreement_usage",
                 filters:
                 [
-                   ["custrecord_ps_au_agreement_detail","anyof", lineId]
+                   ["custrecord_ps_au_agreement_detail","anyof", lineId],
+                   "AND",
+                   ["custrecord_ps_au_usage_date", "on", "today"]
                 ],
                 columns:
                 [
